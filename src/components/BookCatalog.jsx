@@ -6,7 +6,12 @@ import {
   ArrowUpDown, 
   BookOpen, 
   TrendingUp, 
-  X
+  X,
+  Sparkles,
+  Feather,
+  Award,
+  Tag,
+  ArrowRight
 } from 'lucide-react';
 
 export const BookCatalog = () => {
@@ -19,12 +24,89 @@ export const BookCatalog = () => {
     searchQuery, 
     setSearchQuery,
     activeTab,
+    setActiveTab,
     setIsSellModalOpen,
+    currentUser,
+    userRole,
+    isReader,
+    isAuthor,
+    isReviewer,
     t 
   } = useBooks();
 
   return (
     <section id="catalog-section" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12" aria-labelledby="catalog-heading">
+      {/* Dynamic Profile Perk Banner */}
+      <div className={`mb-8 p-4 sm:p-5 rounded-2xl bg-gradient-to-r border transition-all ${
+        isAuthor
+          ? 'from-emerald-950/40 via-[#0e171b] to-black border-emerald-500/30'
+          : isReviewer
+          ? 'from-amber-950/40 via-[#19150d] to-black border-amber-500/30'
+          : 'from-orange-950/40 via-[#16100d] to-black border-orange-500/30'
+      }`}>
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border ${
+              isAuthor 
+                ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40' 
+                : isReviewer 
+                ? 'bg-amber-500/20 text-amber-400 border-amber-500/40' 
+                : 'bg-orange-500/20 text-orange-400 border-orange-500/40'
+            }`}>
+              {isAuthor ? <Feather className="w-5 h-5" /> : isReviewer ? <Award className="w-5 h-5" /> : <BookOpen className="w-5 h-5" />}
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className={`text-[10px] font-mono uppercase tracking-widest font-bold px-2 py-0.5 rounded-full border ${
+                  isAuthor 
+                    ? 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30' 
+                    : isReviewer 
+                    ? 'bg-amber-500/10 text-amber-300 border-amber-500/30' 
+                    : 'bg-orange-500/10 text-orange-300 border-orange-500/30'
+                }`}>
+                  {currentUser?.role || userRole}
+                </span>
+                <span className="text-xs text-slate-400 font-medium">Logged in as {currentUser?.name || 'Guest'}</span>
+              </div>
+              <p className="text-xs text-slate-200 font-semibold mt-1">
+                {isAuthor && "Creator Mode: You keep 85% of book sales. Upload manuscripts directly to the community catalog."}
+                {isReviewer && "Editorial Critic Mode: Full ARC preview access unlocked. Review books and award official Critic's Choice stamps."}
+                {isReader && "Reader Discovery Mode: Enjoy 3 free sample pages, AI read-aloud TTS narration, and instant watermarked PDF downloads."}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 shrink-0">
+            {isAuthor && (
+              <button
+                onClick={() => setIsSellModalOpen(true)}
+                className="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs flex items-center gap-1.5 shadow-lg shadow-emerald-500/20 transition-all cursor-pointer"
+              >
+                <Feather className="w-3.5 h-3.5" />
+                <span>+ Publish Manuscript</span>
+              </button>
+            )}
+
+            {isReviewer && (
+              <button
+                onClick={() => setActiveTab('library')}
+                className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs flex items-center gap-1.5 shadow-lg shadow-amber-500/20 transition-all cursor-pointer"
+              >
+                <Award className="w-3.5 h-3.5" />
+                <span>Open Critic Desk</span>
+              </button>
+            )}
+
+            {isReader && (
+              <div className="flex items-center gap-2 bg-white/[0.05] border border-white/[0.1] px-3 py-1.5 rounded-xl text-[11px] text-orange-300">
+                <Tag className="w-3.5 h-3.5 text-orange-400" />
+                <span>Use coupon <strong className="text-white font-mono bg-orange-500/30 px-1.5 py-0.5 rounded">AUSTRA20</strong> for 20% off</span>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
       {/* Section Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
         <div>

@@ -12,7 +12,11 @@ import {
   Calendar, 
   FileText, 
   UserCheck, 
-  Sparkles 
+  Sparkles,
+  Award,
+  Feather,
+  TrendingUp,
+  CheckCircle2
 } from 'lucide-react';
 import { downloadBookPDF } from '../utils/pdfGenerator';
 
@@ -27,12 +31,16 @@ export const BookModal = () => {
     bookReviews,
     addReview,
     currentUser,
+    isReader,
+    isAuthor,
+    isReviewer,
     notify 
   } = useBooks();
 
   const [newRating, setNewRating] = React.useState(5);
   const [newComment, setNewComment] = React.useState('');
   const [showReviewForm, setShowReviewForm] = React.useState(false);
+  const [isCriticsChoice, setIsCriticsChoice] = React.useState(false);
 
   if (!currentModalBook) return null;
 
@@ -59,11 +67,14 @@ export const BookModal = () => {
     addReview(book.id, {
       userName: currentUser?.name || 'Alex Mercer',
       rating: newRating,
-      comment: newComment.trim()
+      comment: newComment.trim(),
+      isEditorial: isReviewer,
+      criticsChoice: isReviewer ? isCriticsChoice : false
     });
     setNewComment('');
+    setIsCriticsChoice(false);
     setShowReviewForm(false);
-    notify('Thank you! Your verified review has been published.');
+    notify(isReviewer ? 'Certified Editorial Critic Review published!' : 'Thank you! Your verified review has been published.');
   };
 
   return (
@@ -203,6 +214,31 @@ export const BookModal = () => {
               </div>
             </div>
 
+            {/* Role-Specific Context Cards */}
+            {isAuthor && (
+              <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-between text-xs animate-fade-in">
+                <div className="flex items-center gap-2">
+                  <Feather className="w-4 h-4 text-emerald-400" />
+                  <span className="text-slate-200 font-semibold">Author Split (85% Royalty):</span>
+                </div>
+                <div className="font-mono text-emerald-400 font-bold">
+                  Author: ${(book.price * 0.85).toFixed(2)} • Platform: ${(book.price * 0.15).toFixed(2)}
+                </div>
+              </div>
+            )}
+
+            {isReviewer && (
+              <div className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-between text-xs animate-fade-in">
+                <div className="flex items-center gap-2">
+                  <Award className="w-4 h-4 text-amber-400" />
+                  <span className="text-slate-200 font-semibold">Advance Review Copy (ARC) Privileges:</span>
+                </div>
+                <div className="font-mono text-amber-400 font-bold">
+                  Verified Critic • Unrestricted ARC Evaluation
+                </div>
+              </div>
+            )}
+
             {/* Synopsis */}
             <div>
               <h4 className="text-xs font-mono uppercase tracking-wider text-slate-400 mb-2">
@@ -252,26 +288,35 @@ export const BookModal = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <h4 className="text-xs font-mono uppercase tracking-wider text-slate-300">
-                    Verified Reader Reviews ({reviews.length})
+                    Community & Editorial Reviews ({reviews.length})
                   </h4>
                 </div>
-                {owned && !showReviewForm && (
+                {(owned || isReviewer) && !showReviewForm && (
                   <button
                     type="button"
                     onClick={() => setShowReviewForm(true)}
-                    className="text-xs font-bold text-orange-400 hover:text-orange-300 flex items-center gap-1 cursor-pointer"
+                    className={`text-xs font-bold flex items-center gap-1 cursor-pointer transition-colors ${
+                      isReviewer 
+                        ? 'text-amber-400 hover:text-amber-300' 
+                        : 'text-orange-400 hover:text-orange-300'
+                    }`}
                   >
-                    <Star className="w-3.5 h-3.5" />
-                    <span>Write a Review</span>
+                    {isReviewer ? <Award className="w-3.5 h-3.5" /> : <Star className="w-3.5 h-3.5" />}
+                    <span>{isReviewer ? 'Write Editorial Critique' : 'Write a Review'}</span>
                   </button>
                 )}
               </div>
 
-              {/* Review Submission Form (for verified buyers) */}
+              {/* Review Submission Form */}
               {showReviewForm && (
-                <form onSubmit={handleReviewSubmit} className="p-3.5 rounded-xl bg-[#121422] border border-orange-500/30 space-y-3 animate-fade-in">
+                <form onSubmit={handleReviewSubmit} className={`p-4 rounded-xl space-y-3 animate-fade-in ${
+                  isReviewer ? 'bg-[#181512] border border-amber-500/40' : 'bg-[#121422] border border-orange-500/30'
+                }`}>
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-slate-200">Share your rating & thoughts:</span>
+                    <span className="text-xs font-bold text-slate-200 flex items-center gap-1.5">
+                      {isReviewer && <Award className="w-4 h-4 text-amber-400" />}
+                      <span>{isReviewer ? 'Publish Official Editorial Critique:' : 'Share your rating & thoughts:'}</span>
+                    </span>
                     <div className="flex items-center gap-1">
                       {[1, 2, 3, 4, 5].map((s) => (
                         <button
@@ -287,13 +332,28 @@ export const BookModal = () => {
                   </div>
 
                   <textarea
-                    rows="2"
+                    rows="3"
                     required
-                    placeholder="What did you think of the writing, concepts, or technical depth?"
+                    placeholder={isReviewer 
+                      ? "Provide comprehensive literary critique, narrative evaluation, and thematic assessment for this title..."
+                      : "What did you think of the writing, concepts, or technical depth?"}
                     value={newComment}
                     onChange={(e) => setNewComment(e.target.value)}
                     className="w-full bg-[#181a29] rounded-lg p-2.5 text-xs text-white border border-white/[0.1] focus:outline-none focus:border-orange-500/70"
                   />
+
+                  {/* Critic-Exclusive Stamp Award Checkbox */}
+                  {isReviewer && (
+                    <label className="flex items-center gap-2 text-xs text-amber-300 font-semibold cursor-pointer select-none p-2 rounded-lg bg-amber-500/10 border border-amber-500/20">
+                      <input
+                        type="checkbox"
+                        checked={isCriticsChoice}
+                        onChange={(e) => setIsCriticsChoice(e.target.checked)}
+                        className="w-4 h-4 rounded border-amber-500 text-amber-500 focus:ring-0"
+                      />
+                      <span>Award Official Austra Critic's Choice Stamp ⭐</span>
+                    </label>
+                  )}
 
                   <div className="flex items-center justify-end gap-2">
                     <button
@@ -305,9 +365,11 @@ export const BookModal = () => {
                     </button>
                     <button
                       type="submit"
-                      className="btn-glow-primary px-4 py-1.5 rounded-lg text-xs font-bold text-white shadow-md cursor-pointer"
+                      className={`px-4 py-1.5 rounded-lg text-xs font-bold shadow-md cursor-pointer ${
+                        isReviewer ? 'bg-amber-500 hover:bg-amber-400 text-black' : 'btn-glow-primary text-white'
+                      }`}
                     >
-                      Publish Review
+                      {isReviewer ? 'Publish Editorial Critique' : 'Publish Review'}
                     </button>
                   </div>
                 </form>
@@ -319,26 +381,51 @@ export const BookModal = () => {
                   No community reviews submitted yet. Be the first reader to rate this title!
                 </p>
               ) : (
-                <div className="space-y-2.5 max-h-52 overflow-y-auto pr-1">
-                  {reviews.map((rev) => (
-                    <div key={rev.id} className="p-3 rounded-xl bg-white/[0.02] border border-white/[0.04]">
-                      <div className="flex items-center justify-between mb-1">
-                        <div className="flex items-center gap-2">
-                          <span className="text-xs font-bold text-slate-200">{rev.userName}</span>
-                          <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                            Verified Reader
-                          </span>
+                <div className="space-y-2.5 max-h-56 overflow-y-auto pr-1">
+                  {reviews.map((rev) => {
+                    const isEditorialRev = rev.isEditorial || rev.role === 'Reviewer & Critic';
+
+                    return (
+                      <div 
+                        key={rev.id} 
+                        className={`p-3.5 rounded-xl transition-all ${
+                          isEditorialRev 
+                            ? 'bg-amber-950/20 border border-amber-500/40 shadow-md shadow-amber-950/30' 
+                            : 'bg-white/[0.02] border border-white/[0.04]'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between mb-1.5">
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs font-bold text-slate-100">{rev.userName}</span>
+                            {isEditorialRev ? (
+                              <span className="text-[10px] font-mono px-2 py-0.5 rounded font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 flex items-center gap-1">
+                                <Award className="w-3 h-3 text-amber-400" />
+                                <span>{rev.userTitle || 'Editorial Critic Review'}</span>
+                              </span>
+                            ) : (
+                              <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                                Verified Reader
+                              </span>
+                            )}
+                          </div>
+                          <div className="flex items-center gap-0.5 text-amber-400">
+                            {Array.from({ length: rev.rating || 5 }).map((_, i) => (
+                              <Star key={i} className="w-3 h-3 fill-amber-400" />
+                            ))}
+                          </div>
                         </div>
-                        <div className="flex items-center gap-0.5 text-amber-400">
-                          {Array.from({ length: rev.rating || 5 }).map((_, i) => (
-                            <Star key={i} className="w-3 h-3 fill-amber-400" />
-                          ))}
-                        </div>
+
+                        {rev.criticsChoice && (
+                          <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-amber-500/25 border border-amber-500/50 text-[10px] font-mono font-black text-amber-300 uppercase mb-2">
+                            <span>★ AUSTRA CRITIC'S CHOICE AWARD</span>
+                          </div>
+                        )}
+
+                        <p className="text-xs text-slate-300 leading-normal">{rev.comment}</p>
+                        <div className="text-[10px] text-slate-500 mt-1 font-mono">{rev.date || 'Recent'}</div>
                       </div>
-                      <p className="text-xs text-slate-300 leading-normal">{rev.comment}</p>
-                      <div className="text-[10px] text-slate-500 mt-1 font-mono">{rev.date || 'Recent'}</div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </div>

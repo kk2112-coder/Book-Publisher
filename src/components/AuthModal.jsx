@@ -8,7 +8,10 @@ import {
   ShieldCheck, 
   LogOut, 
   CheckCircle,
-  Sparkles
+  Sparkles,
+  BookOpen,
+  Feather,
+  Award
 } from 'lucide-react';
 
 export const AuthModal = () => {
@@ -17,6 +20,9 @@ export const AuthModal = () => {
     setIsAuthModalOpen, 
     currentUser, 
     setCurrentUser, 
+    USER_PERSONAS,
+    switchPersona,
+    userRole,
     notify,
     t,
     setIsAdminLoginModalOpen 
@@ -26,7 +32,7 @@ export const AuthModal = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState('Reader & Author');
+  const [role, setRole] = useState('Reader & Buyer');
 
   if (!isAuthModalOpen) return null;
 
@@ -34,11 +40,24 @@ export const AuthModal = () => {
     e.preventDefault();
     if (!email.trim()) return;
 
+    const roleAvatar = role.includes('Author') 
+      ? USER_PERSONAS.author.avatar 
+      : role.includes('Reviewer') 
+      ? USER_PERSONAS.reviewer.avatar 
+      : USER_PERSONAS.reader.avatar;
+
+    const roleTitle = role.includes('Author')
+      ? 'Independent Author & Creator'
+      : role.includes('Reviewer')
+      ? 'Senior Literary Critic & ARC Evaluator'
+      : 'Avid Reader & Digital Collector';
+
     const userObj = {
       name: name.trim() || email.split('@')[0],
       email: email.trim(),
-      avatar: `https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80`,
-      role: role
+      avatar: roleAvatar,
+      role: role,
+      title: roleTitle
     };
 
     setCurrentUser(userObj);
@@ -51,6 +70,11 @@ export const AuthModal = () => {
     setCurrentUser(null);
     localStorage.removeItem('austra_user_v1');
     notify('Logged out from Austra Press.', 'info');
+    setIsAuthModalOpen(false);
+  };
+
+  const handleQuickPersonaSelect = (key) => {
+    switchPersona(key);
     setIsAuthModalOpen(false);
   };
 
@@ -78,12 +102,63 @@ export const AuthModal = () => {
             <div>
               <h3 className="text-xl font-bold text-white">{currentUser.name}</h3>
               <p className="text-xs text-slate-400">{currentUser.email}</p>
-              <span className="inline-block mt-2 px-3 py-1 rounded-full text-xs font-mono font-semibold bg-orange-500/15 text-orange-400 border border-orange-500/30">
-                {currentUser.role}
-              </span>
+              <div className="mt-2 inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-semibold bg-orange-500/15 text-orange-400 border border-orange-500/30">
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>{currentUser.role}</span>
+              </div>
+              {currentUser.title && (
+                <p className="text-[11px] text-slate-500 mt-1">{currentUser.title}</p>
+              )}
             </div>
 
-            <div className="pt-4 border-t border-white/[0.08] space-y-2">
+            {/* Quick Switch Profiles */}
+            <div className="pt-3 border-t border-white/[0.08] text-left">
+              <p className="text-[11px] font-mono uppercase tracking-wider text-slate-400 mb-2 text-center">
+                Switch Active Persona
+              </p>
+              <div className="grid grid-cols-3 gap-2">
+                <button
+                  type="button"
+                  onClick={() => handleQuickPersonaSelect('reader')}
+                  className={`p-2 rounded-xl border text-center transition-all cursor-pointer ${
+                    userRole.includes('Reader')
+                      ? 'bg-orange-500/20 border-orange-500 text-orange-300'
+                      : 'bg-[#131622] border-white/[0.08] text-slate-400 hover:text-white'
+                  }`}
+                >
+                  <BookOpen className="w-4 h-4 mx-auto mb-1 text-orange-400" />
+                  <span className="block text-[10px] font-bold">Reader</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => handleQuickPersonaSelect('author')}
+                  className={`p-2 rounded-xl border text-center transition-all cursor-pointer ${
+                    userRole.includes('Author')
+                      ? 'bg-emerald-500/20 border-emerald-500 text-emerald-300'
+                      : 'bg-[#131622] border-white/[0.08] text-slate-400 hover:text-white'
+                  }`}
+                >
+                  <Feather className="w-4 h-4 mx-auto mb-1 text-emerald-400" />
+                  <span className="block text-[10px] font-bold">Author</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => handleQuickPersonaSelect('reviewer')}
+                  className={`p-2 rounded-xl border text-center transition-all cursor-pointer ${
+                    userRole.includes('Reviewer')
+                      ? 'bg-amber-500/20 border-amber-500 text-amber-300'
+                      : 'bg-[#131622] border-white/[0.08] text-slate-400 hover:text-white'
+                  }`}
+                >
+                  <Award className="w-4 h-4 mx-auto mb-1 text-amber-400" />
+                  <span className="block text-[10px] font-bold">Reviewer</span>
+                </button>
+              </div>
+            </div>
+
+            <div className="pt-2 space-y-2">
               <button
                 onClick={handleLogout}
                 className="w-full py-2.5 px-4 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer"
@@ -104,13 +179,57 @@ export const AuthModal = () => {
                 {isRegister ? t('register') : t('login')}
               </h2>
             </div>
-            <p className="text-xs text-slate-400 mb-6">
+            <p className="text-xs text-slate-400 mb-4">
               {isRegister
-                ? 'Join Austra Press to publish, read, and manage sovereign books.'
-                : 'Sign in to access your purchased library and creator royalties.'}
+                ? 'Join Austra Press to publish, read, or review sovereign digital books.'
+                : 'Sign in to access your library, creator royalties, or ARC review desk.'}
             </p>
 
-            <form onSubmit={handleAuthSubmit} className="space-y-4">
+            {/* Quick Demo Sign In Pills */}
+            <div className="mb-5 p-3 rounded-2xl bg-white/[0.03] border border-white/[0.08]">
+              <p className="text-[10px] font-mono uppercase tracking-wider text-slate-400 mb-2 font-bold">
+                ⚡ Instant Demo Login As:
+              </p>
+              <div className="grid grid-cols-3 gap-2">
+                <button
+                  type="button"
+                  onClick={() => handleQuickPersonaSelect('reader')}
+                  className="p-2 rounded-xl bg-[#131622] hover:bg-orange-500/20 border border-white/[0.1] hover:border-orange-500/50 text-left transition-all cursor-pointer group"
+                >
+                  <div className="flex items-center gap-1.5 text-orange-400 mb-0.5">
+                    <BookOpen className="w-3.5 h-3.5" />
+                    <span className="text-[11px] font-bold text-white group-hover:text-orange-300">Reader</span>
+                  </div>
+                  <p className="text-[9px] text-slate-400 leading-tight">Alex Mercer</p>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => handleQuickPersonaSelect('author')}
+                  className="p-2 rounded-xl bg-[#131622] hover:bg-emerald-500/20 border border-white/[0.1] hover:border-emerald-500/50 text-left transition-all cursor-pointer group"
+                >
+                  <div className="flex items-center gap-1.5 text-emerald-400 mb-0.5">
+                    <Feather className="w-3.5 h-3.5" />
+                    <span className="text-[11px] font-bold text-white group-hover:text-emerald-300">Author</span>
+                  </div>
+                  <p className="text-[9px] text-slate-400 leading-tight">Dr. Julian Croft</p>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => handleQuickPersonaSelect('reviewer')}
+                  className="p-2 rounded-xl bg-[#131622] hover:bg-amber-500/20 border border-white/[0.1] hover:border-amber-500/50 text-left transition-all cursor-pointer group"
+                >
+                  <div className="flex items-center gap-1.5 text-amber-400 mb-0.5">
+                    <Award className="w-3.5 h-3.5" />
+                    <span className="text-[11px] font-bold text-white group-hover:text-amber-300">Reviewer</span>
+                  </div>
+                  <p className="text-[9px] text-slate-400 leading-tight">Elena Rostova</p>
+                </button>
+              </div>
+            </div>
+
+            <form onSubmit={handleAuthSubmit} className="space-y-3.5">
               {isRegister && (
                 <div>
                   <label htmlFor="auth-name" className="block text-xs font-semibold text-slate-300 mb-1">
@@ -161,7 +280,7 @@ export const AuthModal = () => {
               {isRegister && (
                 <div>
                   <label htmlFor="auth-role" className="block text-xs font-semibold text-slate-300 mb-1">
-                    Account Role
+                    Select Your Role & Profile
                   </label>
                   <select
                     id="auth-role"
@@ -169,9 +288,9 @@ export const AuthModal = () => {
                     onChange={(e) => setRole(e.target.value)}
                     className="w-full bg-[#131622] rounded-xl px-3.5 py-2.5 text-xs text-white border border-white/[0.1]"
                   >
-                    <option value="Reader & Buyer">Reader & Buyer</option>
-                    <option value="Author & Creator">Author & Creator</option>
-                    <option value="Publisher Reviewer">Publisher Reviewer</option>
+                    <option value="Reader & Buyer">📖 Reader & Buyer (Library, Previews & Purchases)</option>
+                    <option value="Author & Creator">✍️ Author & Creator (85% Royalties, Studio & Payouts)</option>
+                    <option value="Reviewer & Critic">🎖️ Reviewer & Critic (ARC Desk, Editorial Badges)</option>
                   </select>
                 </div>
               )}
@@ -183,17 +302,17 @@ export const AuthModal = () => {
                 {isRegister ? t('register') : t('login')}
               </button>
 
-              <div className="pt-3 text-center">
+              <div className="pt-2 text-center">
                 <button
                   type="button"
                   onClick={() => setIsRegister(!isRegister)}
-                  className="text-xs text-orange-400 hover:text-orange-300 underline font-medium"
+                  className="text-xs text-orange-400 hover:text-orange-300 underline font-medium cursor-pointer"
                 >
                   {isRegister ? 'Already have an account? Sign In' : "Don't have an account? Create One"}
                 </button>
               </div>
 
-              <div className="pt-3 border-t border-white/[0.08] mt-3 flex items-center justify-center gap-1.5 text-xs text-slate-400">
+              <div className="pt-3 border-t border-white/[0.08] mt-2 flex items-center justify-center gap-1.5 text-xs text-slate-400">
                 <ShieldCheck className="w-3.5 h-3.5 text-orange-400" />
                 <span>Publisher Staff?</span>
                 <button

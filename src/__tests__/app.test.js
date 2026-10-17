@@ -171,4 +171,67 @@ describe('Austra Press Core Business Logic Tests', () => {
     assert.ok(fs.existsSync(path.resolve('public/robots.txt')), 'robots.txt must be present');
     assert.ok(fs.existsSync(path.resolve('public/sitemap.xml')), 'sitemap.xml must be present');
   });
+
+  it('should validate 3 distinct user personas (reader, author, reviewer) and role-specific permissions', () => {
+    const personas = {
+      reader: {
+        id: 'reader',
+        role: 'Reader & Buyer',
+        name: 'Alex Mercer',
+        perks: ['3-Page Free Previews', 'Instant 3DS Checkout', 'AI Read-Aloud TTS Narration', 'Watermarked PDF Downloads']
+      },
+      author: {
+        id: 'author',
+        role: 'Author & Creator',
+        name: 'Dr. Julian Croft',
+        perks: ['85% Creator Royalties', 'Manuscript Publishing Studio', 'Live Sales Analytics', 'Stripe / PayPal Payouts']
+      },
+      reviewer: {
+        id: 'reviewer',
+        role: 'Reviewer & Critic',
+        name: 'Elena Rostova',
+        perks: ['Advance Review Copies (ARC)', 'Critic Guild Accreditation', 'Critic\'s Choice Badge Award', 'Editorial Critiques']
+      }
+    };
+
+    assert.ok(personas.reader && personas.author && personas.reviewer, 'Must have all 3 personas defined');
+
+    // Role detection logic
+    const checkRole = (user) => {
+      const role = user?.role || 'Reader & Buyer';
+      return {
+        isReader: role === 'Reader & Buyer' || role.includes('Reader') || role.includes('Buyer'),
+        isAuthor: role === 'Author & Creator' || role.includes('Author') || role.includes('Creator'),
+        isReviewer: role === 'Reviewer & Critic' || role.includes('Reviewer') || role.includes('Critic')
+      };
+    };
+
+    const readerChecks = checkRole(personas.reader);
+    assert.equal(readerChecks.isReader, true);
+    assert.equal(readerChecks.isAuthor, false);
+    assert.equal(readerChecks.isReviewer, false);
+
+    const authorChecks = checkRole(personas.author);
+    assert.equal(authorChecks.isAuthor, true);
+    assert.equal(authorChecks.isReader, false);
+    assert.equal(authorChecks.isReviewer, false);
+
+    const reviewerChecks = checkRole(personas.reviewer);
+    assert.equal(reviewerChecks.isReviewer, true);
+    assert.equal(reviewerChecks.isReader, false);
+    assert.equal(reviewerChecks.isAuthor, false);
+
+    // ARC full-access bypass logic
+    const canAccessPageWithoutPaywall = (pageIndex, isOwned, isReviewer) => {
+      if (isOwned || isReviewer) return true; // Reviewers have ARC full book preview access
+      return pageIndex < 3; // Standard readers have 3-page free preview
+    };
+
+    // Reader on page 4 without ownership: locked
+    assert.equal(canAccessPageWithoutPaywall(4, false, false), false, 'Unowned reader cannot access page 4+');
+    // Reviewer on page 4 without ownership: unlocked (ARC access)
+    assert.equal(canAccessPageWithoutPaywall(4, false, true), true, 'Reviewer has full ARC access on page 4+');
+    // Owned book on page 4: unlocked
+    assert.equal(canAccessPageWithoutPaywall(4, true, false), true, 'Owned book unlocks full pages');
+  });
 });

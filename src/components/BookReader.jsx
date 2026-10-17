@@ -20,7 +20,10 @@ import {
   Play,
   Pause,
   Square,
-  Headphones
+  Headphones,
+  Award,
+  Feather,
+  Star
 } from 'lucide-react';
 import { downloadBookPDF } from '../utils/pdfGenerator';
 
@@ -28,11 +31,15 @@ export const BookReader = () => {
   const { 
     currentReaderBook, 
     setCurrentReaderBook, 
+    setCurrentModalBook,
     isBookOwned, 
     initiateCheckout, 
     addToCart,
     notify,
-    currentUser 
+    currentUser,
+    isReader,
+    isAuthor,
+    isReviewer
   } = useBooks();
 
   const [currentPage, setCurrentPage] = useState(0);
@@ -58,6 +65,9 @@ export const BookReader = () => {
 
   const book = currentReaderBook;
   const owned = isBookOwned(book.id);
+  const isCreatorOfBook = isAuthor && (book.sellerId === 'user-self' || !book.isOfficial);
+  const isArcCriticReviewer = isReviewer;
+  const hasFullAccess = owned || isCreatorOfBook || isArcCriticReviewer;
   const sampleLimit = book.sampleLimit || 3;
 
   // Prepare pages
@@ -67,12 +77,17 @@ export const BookReader = () => {
     `CHAPTER 3\n\nReal-world applications and future research paradigms.`
   ];
 
-  const availablePages = owned && book.chapters && book.chapters.length > 0
+  const availablePages = hasFullAccess && book.chapters && book.chapters.length > 0
     ? book.chapters.map(ch => `${ch.title.toUpperCase()}\n\n${ch.content}`)
+    : hasFullAccess
+    ? [
+        ...previewPages,
+        `CHAPTER 4: CRITICAL EVALUATION EXCLUSIVE\n\nAdvance reading copy privileged chapter for certified reviewers and creators. Analyzing systemic implementation across global architectures.`
+      ]
     : [...previewPages, 'LOCKED_PAYWALL'];
 
   const totalPagesCount = availablePages.length;
-  const isPaywallPage = !owned && currentPage >= sampleLimit;
+  const isPaywallPage = !hasFullAccess && currentPage >= sampleLimit;
 
   // Theme styles
   const themeClasses = {
@@ -184,7 +199,17 @@ export const BookReader = () => {
           <div className="truncate">
             <div className="flex items-center gap-2">
               <h2 className="text-sm font-bold truncate text-white">{book.title}</h2>
-              {owned ? (
+              {isArcCriticReviewer ? (
+                <span className="shrink-0 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 flex items-center gap-1">
+                  <Award className="w-3 h-3 text-amber-400" />
+                  <span>ARC Evaluator Copy</span>
+                </span>
+              ) : isCreatorOfBook ? (
+                <span className="shrink-0 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 flex items-center gap-1">
+                  <Feather className="w-3 h-3 text-emerald-400" />
+                  <span>Author Manuscript Mode</span>
+                </span>
+              ) : owned ? (
                 <span className="shrink-0 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center gap-1">
                   <CheckCircle2 className="w-3 h-3" />
                   <span>Full Access Unlocked</span>
@@ -325,6 +350,22 @@ export const BookReader = () => {
             >
               <Unlock className="w-3.5 h-3.5" />
               <span>Buy (${book.price.toFixed(2)})</span>
+            </button>
+          )}
+
+          {/* Reviewer ARC Evaluation CTA */}
+          {isArcCriticReviewer && (
+            <button
+              onClick={() => {
+                handleStopSpeech();
+                setCurrentReaderBook(null);
+                setCurrentModalBook(book);
+              }}
+              className="px-3 py-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-500 text-amber-300 hover:text-black border border-amber-500/40 text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer"
+              title="Publish Editorial Critique for this ARC title"
+            >
+              <Star className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Write Critique</span>
             </button>
           )}
 

@@ -17,7 +17,11 @@ import {
   Globe,
   BarChart3,
   MessageSquare,
-  Lock
+  Lock,
+  Feather,
+  Award,
+  Check,
+  Sparkles
 } from 'lucide-react';
 
 export const Navbar = () => {
@@ -42,11 +46,18 @@ export const Navbar = () => {
     setIsAuthModalOpen,
     setIsContactModalOpen,
     isAdminAuthenticated,
-    setIsAdminLoginModalOpen
+    setIsAdminLoginModalOpen,
+    USER_PERSONAS,
+    userRole,
+    isReader,
+    isAuthor,
+    isReviewer,
+    switchPersona
   } = useBooks();
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [langMenuOpen, setLangMenuOpen] = useState(false);
+  const [personaMenuOpen, setPersonaMenuOpen] = useState(false);
 
   const handleAnnouncementClick = () => {
     const featuredBook = books.find(b => b.id === settings.announcementLink) || books[0];
@@ -102,7 +113,7 @@ export const Navbar = () => {
           </div>
         </div>
 
-        {/* Center Navigation Links */}
+        {/* Center Navigation Links - Customized to Active Role */}
         <nav className="hidden xl:flex items-center gap-1 flex-shrink-0">
           <button
             onClick={() => setActiveTab('store')}
@@ -114,6 +125,50 @@ export const Navbar = () => {
           >
             {t('exploreBooks')}
           </button>
+
+          {/* Role-Specific Link 2 */}
+          {isAuthor ? (
+            <button
+              onClick={() => setActiveTab('library')}
+              className={`px-3 py-2 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 ${
+                activeTab === 'library'
+                  ? 'text-emerald-400 bg-emerald-500/15 border border-emerald-500/40 shadow-sm'
+                  : 'text-emerald-300 hover:text-white hover:bg-emerald-500/10'
+              }`}
+            >
+              <Feather className="w-3.5 h-3.5 text-emerald-400" />
+              <span>Creator Studio & Royalties</span>
+            </button>
+          ) : isReviewer ? (
+            <button
+              onClick={() => setActiveTab('library')}
+              className={`px-3 py-2 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 ${
+                activeTab === 'library'
+                  ? 'text-amber-400 bg-amber-500/15 border border-amber-500/40 shadow-sm'
+                  : 'text-amber-300 hover:text-white hover:bg-amber-500/10'
+              }`}
+            >
+              <Award className="w-3.5 h-3.5 text-amber-400" />
+              <span>Critic Desk & ARCs</span>
+            </button>
+          ) : (
+            <button
+              onClick={() => setActiveTab('library')}
+              className={`px-3 py-2 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 ${
+                activeTab === 'library'
+                  ? 'text-white bg-white/[0.08] border border-white/[0.12]'
+                  : 'text-slate-300 hover:text-white hover:bg-white/[0.04]'
+              }`}
+            >
+              <Bookmark className="w-3.5 h-3.5 text-orange-400" />
+              <span>{t('myLibrary')}</span>
+              {myLibrary.length > 0 && (
+                <span className="ml-1 px-1.5 py-0.2 text-[10px] rounded-full bg-slate-800 text-orange-400 border border-orange-500/30">
+                  {myLibrary.length}
+                </span>
+              )}
+            </button>
+          )}
 
           <button
             onClick={() => setActiveTab('community')}
@@ -128,23 +183,6 @@ export const Navbar = () => {
           </button>
 
           <button
-            onClick={() => setActiveTab('library')}
-            className={`px-3 py-2 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 ${
-              activeTab === 'library'
-                ? 'text-white bg-white/[0.08] border border-white/[0.12]'
-                : 'text-slate-300 hover:text-white hover:bg-white/[0.04]'
-            }`}
-          >
-            <Bookmark className="w-3.5 h-3.5 text-orange-400" />
-            <span>{t('myLibrary')}</span>
-            {myLibrary.length > 0 && (
-              <span className="ml-1 px-1.5 py-0.2 text-[10px] rounded-full bg-slate-800 text-orange-400 border border-orange-500/30">
-                {myLibrary.length}
-              </span>
-            )}
-          </button>
-
-          <button
             onClick={() => setActiveTab('analytics')}
             className={`px-3 py-2 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 ${
               activeTab === 'analytics'
@@ -153,19 +191,38 @@ export const Navbar = () => {
             }`}
           >
             <BarChart3 className="w-3.5 h-3.5 text-emerald-400" />
-            <span>{t('analytics')}</span>
+            <span>{isAuthor ? 'Sales Telemetry' : isReviewer ? 'Review Stats' : t('analytics')}</span>
           </button>
 
-          <button
-            onClick={() => setIsSellModalOpen(true)}
-            className="px-3 py-2 rounded-lg text-xs font-semibold text-amber-300 hover:text-white hover:bg-amber-500/10 transition-all flex items-center gap-1.5 border border-amber-500/20"
-          >
-            <PlusCircle className="w-3.5 h-3.5 text-amber-400" />
-            <span>{t('sellBook')}</span>
-          </button>
+          {/* Primary Role Action Button */}
+          {isAuthor ? (
+            <button
+              onClick={() => setIsSellModalOpen(true)}
+              className="btn-glow-primary px-3 py-1.5 rounded-lg text-xs font-bold text-white flex items-center gap-1.5 shadow-md shadow-orange-500/30 cursor-pointer"
+            >
+              <PlusCircle className="w-3.5 h-3.5" />
+              <span>+ Publish (85% Royalty)</span>
+            </button>
+          ) : isReviewer ? (
+            <button
+              onClick={() => setActiveTab('library')}
+              className="px-3 py-1.5 rounded-lg text-xs font-bold text-amber-300 bg-amber-500/15 border border-amber-500/40 hover:bg-amber-500/25 transition-all flex items-center gap-1.5 cursor-pointer"
+            >
+              <Award className="w-3.5 h-3.5 text-amber-400" />
+              <span>Evaluate ARCs</span>
+            </button>
+          ) : (
+            <button
+              onClick={() => setIsSellModalOpen(true)}
+              className="px-3 py-2 rounded-lg text-xs font-semibold text-amber-300 hover:text-white hover:bg-amber-500/10 transition-all flex items-center gap-1.5 border border-amber-500/20"
+            >
+              <PlusCircle className="w-3.5 h-3.5 text-amber-400" />
+              <span>{t('sellBook')}</span>
+            </button>
+          )}
         </nav>
 
-        {/* Right Actions: Search, Language, Theme, Auth, Cart, Admin */}
+        {/* Right Actions: Persona Switcher, Search, Language, Theme, Auth, Cart, Admin */}
         <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
           {/* Search Bar */}
           <div className="relative hidden 2xl:block w-40">
@@ -243,6 +300,127 @@ export const Navbar = () => {
           >
             <MessageSquare className="w-4 h-4 text-orange-400" />
           </button>
+
+          {/* Quick Persona Switcher Pill */}
+          <div className="relative">
+            <button
+              onClick={() => setPersonaMenuOpen(!personaMenuOpen)}
+              className={`px-2.5 sm:px-3 py-1.5 rounded-xl border text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer shadow-sm ${
+                isAuthor
+                  ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-300 hover:border-emerald-500'
+                  : isReviewer
+                  ? 'bg-amber-500/15 border-amber-500/40 text-amber-300 hover:border-amber-500'
+                  : 'bg-orange-500/15 border-orange-500/40 text-orange-300 hover:border-orange-500'
+              }`}
+              title="Switch Active Persona & Roles"
+            >
+              {isAuthor ? (
+                <Feather className="w-3.5 h-3.5 text-emerald-400" />
+              ) : isReviewer ? (
+                <Award className="w-3.5 h-3.5 text-amber-400" />
+              ) : (
+                <BookOpen className="w-3.5 h-3.5 text-orange-400" />
+              )}
+              <span className="hidden lg:inline font-mono text-[11px] font-bold">
+                {isAuthor ? 'Author Mode' : isReviewer ? 'Reviewer Mode' : 'Reader Mode'}
+              </span>
+              <span className="text-[10px] text-slate-400">▾</span>
+            </button>
+
+            {personaMenuOpen && (
+              <div className="absolute right-0 mt-2 w-72 rounded-2xl bg-[#0e101c] border border-white/[0.12] shadow-2xl p-2 z-50 animate-scale-in text-white">
+                <div className="px-3 py-2 border-b border-white/[0.06] mb-1">
+                  <div className="text-[10px] uppercase font-mono tracking-wider text-slate-400 font-bold">
+                    Active Profile Experience
+                  </div>
+                  <div className="text-xs font-bold text-white mt-0.5 flex items-center justify-between">
+                    <span>{currentUser?.name}</span>
+                    <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded ${
+                      isAuthor ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' :
+                      isReviewer ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' :
+                      'bg-orange-500/20 text-orange-400 border border-orange-500/30'
+                    }`}>
+                      {currentUser?.role}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="space-y-1">
+                  {/* Option 1: Reader & Buyer */}
+                  <button
+                    onClick={() => {
+                      switchPersona('reader');
+                      setPersonaMenuOpen(false);
+                    }}
+                    className={`w-full text-left p-2 rounded-xl transition-all flex items-start gap-2.5 cursor-pointer ${
+                      isReader ? 'bg-orange-500/20 border border-orange-500/40' : 'hover:bg-white/[0.05]'
+                    }`}
+                  >
+                    <div className="w-7 h-7 rounded-lg bg-orange-500/20 border border-orange-500/40 flex items-center justify-center text-orange-400 shrink-0 mt-0.5">
+                      <BookOpen className="w-3.5 h-3.5" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-bold text-slate-100">Reader & Buyer</span>
+                        {isReader && <Check className="w-3.5 h-3.5 text-orange-400" />}
+                      </div>
+                      <p className="text-[10px] text-slate-400 leading-tight mt-0.5">
+                        Read 3-page samples, TTS read-aloud, instant checkout & watermarked PDFs.
+                      </p>
+                    </div>
+                  </button>
+
+                  {/* Option 2: Author & Creator */}
+                  <button
+                    onClick={() => {
+                      switchPersona('author');
+                      setPersonaMenuOpen(false);
+                    }}
+                    className={`w-full text-left p-2 rounded-xl transition-all flex items-start gap-2.5 cursor-pointer ${
+                      isAuthor ? 'bg-emerald-500/20 border border-emerald-500/40' : 'hover:bg-white/[0.05]'
+                    }`}
+                  >
+                    <div className="w-7 h-7 rounded-lg bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 shrink-0 mt-0.5">
+                      <Feather className="w-3.5 h-3.5" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-bold text-slate-100">Author & Creator</span>
+                        {isAuthor && <Check className="w-3.5 h-3.5 text-emerald-400" />}
+                      </div>
+                      <p className="text-[10px] text-slate-400 leading-tight mt-0.5">
+                        Publish books, earn 85% royalties, track sales, and withdraw payouts.
+                      </p>
+                    </div>
+                  </button>
+
+                  {/* Option 3: Reviewer & Critic */}
+                  <button
+                    onClick={() => {
+                      switchPersona('reviewer');
+                      setPersonaMenuOpen(false);
+                    }}
+                    className={`w-full text-left p-2 rounded-xl transition-all flex items-start gap-2.5 cursor-pointer ${
+                      isReviewer ? 'bg-amber-500/20 border border-amber-500/40' : 'hover:bg-white/[0.05]'
+                    }`}
+                  >
+                    <div className="w-7 h-7 rounded-lg bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400 shrink-0 mt-0.5">
+                      <Award className="w-3.5 h-3.5" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-bold text-slate-100">Reviewer & Critic</span>
+                        {isReviewer && <Check className="w-3.5 h-3.5 text-amber-400" />}
+                      </div>
+                      <p className="text-[10px] text-slate-400 leading-tight mt-0.5">
+                        Advance Review Copy (ARC) evaluator privileges, editorial critique & badges.
+                      </p>
+                    </div>
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
 
           {/* User Auth Trigger */}
           <button
@@ -418,6 +596,42 @@ export const Navbar = () => {
                 <span className="text-[10px] px-2 py-0.5 rounded bg-orange-500/20 text-orange-300 font-mono">PORTAL</span>
               )}
             </button>
+
+            {/* Mobile Persona Switcher Section */}
+            <div className="p-3 rounded-xl bg-white/[0.03] border border-white/[0.08] my-2 space-y-2">
+              <div className="text-[10px] font-mono uppercase text-slate-400 font-bold">
+                Switch Profile Experience:
+              </div>
+              <div className="grid grid-cols-3 gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => { switchPersona('reader'); setMobileMenuOpen(false); }}
+                  className={`py-1.5 px-2 rounded-lg text-[11px] font-bold text-center border ${
+                    isReader ? 'bg-orange-500 text-white border-orange-400' : 'bg-[#151726] text-slate-300 border-white/[0.08]'
+                  }`}
+                >
+                  📖 Reader
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { switchPersona('author'); setMobileMenuOpen(false); }}
+                  className={`py-1.5 px-2 rounded-lg text-[11px] font-bold text-center border ${
+                    isAuthor ? 'bg-emerald-500 text-white border-emerald-400' : 'bg-[#151726] text-slate-300 border-white/[0.08]'
+                  }`}
+                >
+                  ✍️ Author
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { switchPersona('reviewer'); setMobileMenuOpen(false); }}
+                  className={`py-1.5 px-2 rounded-lg text-[11px] font-bold text-center border ${
+                    isReviewer ? 'bg-amber-500 text-white border-amber-400' : 'bg-[#151726] text-slate-300 border-white/[0.08]'
+                  }`}
+                >
+                  🎖️ Reviewer
+                </button>
+              </div>
+            </div>
 
             <button
               onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}

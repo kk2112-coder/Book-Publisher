@@ -25,6 +25,45 @@ const DEFAULT_SETTINGS = {
   adminPassword: 'admin'
 };
 
+export const USER_PERSONAS = {
+  reader: {
+    id: 'reader',
+    role: 'Reader & Buyer',
+    name: 'Alex Mercer',
+    email: 'alex.reader@austra.io',
+    title: 'Avid Reader & Digital Collector',
+    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80',
+    bio: 'Avid explorer of digital literature, speculative fiction, and edge computing architecture.',
+    badge: 'Verified Reader & Buyer',
+    accentColor: '#f97316',
+    perks: ['3-Page Free Previews', 'Instant 3DS Checkout', 'AI Read-Aloud TTS Narration', 'Watermarked PDF Downloads']
+  },
+  author: {
+    id: 'author',
+    role: 'Author & Creator',
+    name: 'Dr. Julian Croft',
+    email: 'julian.croft@austra.io',
+    title: 'Independent Sci-Fi & AI Author',
+    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80',
+    bio: 'Author of published technical treatises. Publishing community manuscripts with 85% creator royalties.',
+    badge: 'Austra Verified Author',
+    accentColor: '#10b981',
+    perks: ['85% Creator Royalties', 'Manuscript Publishing Studio', 'Live Sales Analytics', 'Stripe / PayPal Payouts']
+  },
+  reviewer: {
+    id: 'reviewer',
+    role: 'Reviewer & Critic',
+    name: 'Elena Rostova',
+    email: 'elena.critic@austra.io',
+    title: 'Senior Literary Critic & ARC Evaluator',
+    avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=200&q=80',
+    bio: 'Member of the Digital Critics Guild. Evaluating advance review copies (ARC) and curating editorial recommendations.',
+    badge: 'Certified Editorial Critic',
+    accentColor: '#eab308',
+    perks: ['Advance Review Copy (ARC) Access', 'Certified Editorial Reviews', 'Critic Evaluation Desk', "Award Critic's Choice Stamps"]
+  }
+};
+
 export const BookProvider = ({ children }) => {
   // Theme (Dark or Light)
   const [theme, setTheme] = useState(() => {
@@ -117,25 +156,29 @@ export const BookProvider = ({ children }) => {
     }
   });
 
-  // Current User
+  // Current User (Defaults to Reader & Buyer persona)
   const [currentUser, setCurrentUser] = useState(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEYS.USER);
-      return saved ? JSON.parse(saved) : {
-        name: 'Alex Mercer',
-        email: 'alex.reader@austra.io',
-        avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80',
-        role: 'Reader & Creator'
-      };
+      return saved ? JSON.parse(saved) : USER_PERSONAS.reader;
     } catch {
-      return {
-        name: 'Alex Mercer',
-        email: 'alex.reader@austra.io',
-        avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80',
-        role: 'Reader & Creator'
-      };
+      return USER_PERSONAS.reader;
     }
   });
+
+  // Role helper flags
+  const userRole = currentUser?.role || 'Reader & Buyer';
+  const isReader = userRole === 'Reader & Buyer' || userRole.includes('Reader') || userRole.includes('Buyer');
+  const isAuthor = userRole === 'Author & Creator' || userRole.includes('Author') || userRole.includes('Creator');
+  const isReviewer = userRole === 'Reviewer & Critic' || userRole.includes('Reviewer') || userRole.includes('Critic');
+
+  const switchPersona = (personaKey) => {
+    const target = USER_PERSONAS[personaKey];
+    if (!target) return;
+    setCurrentUser(target);
+    localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(target));
+    notify(`Profile switched to ${target.role} (${target.name})!`);
+  };
 
   // Navigation & UI States
   const [activeTab, setActiveTab] = useState('store'); // 'store' | 'community' | 'library' | 'analytics' | 'admin'
@@ -324,9 +367,14 @@ export const BookProvider = ({ children }) => {
   };
 
   const addReview = (bookId, newRev) => {
+    const isCriticUser = isReviewer || currentUser?.role === 'Reviewer & Critic' || currentUser?.role?.includes('Reviewer') || currentUser?.role?.includes('Critic');
     const reviewObj = {
       id: `rev-${Date.now()}`,
       userName: currentUser?.name || 'Verified Reader',
+      userTitle: currentUser?.title || (isCriticUser ? 'Senior Literary Critic & ARC Evaluator' : 'Verified Reader'),
+      role: currentUser?.role || 'Reader & Buyer',
+      isEditorial: newRev.isEditorial !== undefined ? Boolean(newRev.isEditorial) : isCriticUser,
+      criticsChoice: Boolean(newRev.criticsChoice),
       rating: newRev.rating || 5,
       comment: newRev.comment,
       date: new Date().toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })
@@ -341,7 +389,7 @@ export const BookProvider = ({ children }) => {
       return updated;
     });
 
-    notify('Your review and rating have been posted!');
+    notify(reviewObj.isEditorial ? 'Official Editorial Critic Review published!' : 'Your reader review and rating have been posted!');
   };
 
   const requestPayout = (amount, method) => {
@@ -503,6 +551,12 @@ export const BookProvider = ({ children }) => {
         requestPayout,
         currentUser,
         setCurrentUser,
+        USER_PERSONAS,
+        userRole,
+        isReader,
+        isAuthor,
+        isReviewer,
+        switchPersona,
         toast,
         notify,
         theme,
