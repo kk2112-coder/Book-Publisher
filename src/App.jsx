@@ -46,7 +46,7 @@ function MainApp() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#07080c] text-slate-100 selection:bg-orange-500 selection:text-white">
+    <div className="min-h-screen flex flex-col app-root-bg transition-colors duration-300 selection:bg-orange-500 selection:text-white">
       {/* PWA Install Banner */}
       {showPwaBanner && (
         <aside aria-label="App installation banner" className="bg-gradient-to-r from-orange-600 via-amber-600 to-orange-600 text-white px-4 py-2 text-xs font-semibold flex items-center justify-between shadow-lg z-50">

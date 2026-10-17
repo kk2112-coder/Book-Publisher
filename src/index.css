@@ -19,9 +19,11 @@
     transition: background-color 0.35s cubic-bezier(0.16, 1, 0.3, 1), color 0.35s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
-  html.light body {
-    background-color: #f8fafc;
-    color: #0f172a;
+  html.light body,
+  html.light .app-root-bg,
+  html.light main {
+    background-color: #f8fafc !important;
+    color: #0f172a !important;
   }
 
   html.light {
@@ -29,8 +31,38 @@
   }
 
   html.light header {
-    background-color: rgba(255, 255, 255, 0.94) !important;
+    background-color: rgba(255, 255, 255, 0.95) !important;
     border-bottom: 1px solid #e2e8f0 !important;
+  }
+
+  html.light .brand-logo-text {
+    color: #0f172a !important;
+    background: none !important;
+    -webkit-text-fill-color: #0f172a !important;
+  }
+
+  html.light #hero-title,
+  html.light h1,
+  html.light h2,
+  html.light h3,
+  html.light h4 {
+    color: #0f172a !important;
+  }
+
+  html.light .bg-\[\#161826\]\/90 {
+    background-color: #ffffff !important;
+    border-color: rgba(255, 106, 0, 0.4) !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05) !important;
+  }
+
+  html.light header > div[role="region"] {
+    background: linear-gradient(90deg, #fff7ed, #ffedd5, #fff7ed) !important;
+    border-bottom: 1px solid #fed7aa !important;
+    color: #c2410c !important;
+  }
+
+  html.light header > div[role="region"] * {
+    color: #c2410c !important;
   }
 
   html.light footer {
@@ -119,6 +151,13 @@
 
   html.light table tbody tr:hover {
     background-color: rgba(0, 0, 0, 0.02) !important;
+  }
+
+  /* Default Dark Mode explicit classes */
+  html.dark body,
+  html.dark .app-root-bg {
+    background-color: #07080c !important;
+    color: #e2e8f0 !important;
   }
 
   h1, h2, h3, h4, h5, h6 {
