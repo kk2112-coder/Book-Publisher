@@ -150,6 +150,7 @@ export const BookProvider = ({ children }) => {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [isAdminLoginModalOpen, setIsAdminLoginModalOpen] = useState(false);
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
   const [checkoutTarget, setCheckoutTarget] = useState(null);
   const [cart, setCart] = useState([]);
@@ -398,6 +399,8 @@ export const BookProvider = ({ children }) => {
         setIsCheckoutOpen,
         isAuthModalOpen,
         setIsAuthModalOpen,
+        isAdminLoginModalOpen,
+        setIsAdminLoginModalOpen,
         isContactModalOpen,
         setIsContactModalOpen,
         checkoutTarget,

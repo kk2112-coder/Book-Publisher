@@ -6,6 +6,7 @@ import { BookCatalog } from './components/BookCatalog';
 import { BookModal } from './components/BookModal';
 import { CartDrawer } from './components/CartDrawer';
 import { AuthModal } from './components/AuthModal';
+import { AdminLoginModal } from './components/AdminLoginModal';
 import { ContactModal } from './components/ContactModal';
 import { Footer } from './components/Footer';
 import { DownloadCloud, Sparkles, X } from 'lucide-react';
@@ -121,6 +122,7 @@ function MainApp() {
 
       <BookModal />
       <AuthModal />
+      <AdminLoginModal />
       <ContactModal />
       <CartDrawer />
 

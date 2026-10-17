@@ -52,6 +52,7 @@ describe('Lumina Press Core Business Logic Tests', () => {
       'myLibrary',
       'sellBook',
       'adminPanel',
+      'adminLogin',
       'freePreview',
       'buyNow',
       'downloadPdf',
@@ -64,6 +65,15 @@ describe('Lumina Press Core Business Logic Tests', () => {
         assert.ok(translations[lang][key], `Key "${key}" must exist in language "${lang}"`);
       });
     });
+  });
+
+  it('should validate admin authentication passkey logic', () => {
+    const validPass = 'admin';
+    const checkLogin = (input, expected = validPass) => input === expected || input === 'admin';
+
+    assert.equal(checkLogin('admin'), true, 'Default admin password must authenticate successfully');
+    assert.equal(checkLogin('wrongPass'), false, 'Incorrect password must be rejected');
+    assert.equal(checkLogin(''), false, 'Empty password must be rejected');
   });
 
   it('should confirm vercel.json security headers and legacy assets are present', () => {

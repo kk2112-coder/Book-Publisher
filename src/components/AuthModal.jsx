@@ -18,7 +18,8 @@ export const AuthModal = () => {
     currentUser, 
     setCurrentUser, 
     notify,
-    t 
+    t,
+    setIsAdminLoginModalOpen 
   } = useBooks();
 
   const [isRegister, setIsRegister] = useState(false);
@@ -189,6 +190,21 @@ export const AuthModal = () => {
                   className="text-xs text-orange-400 hover:text-orange-300 underline font-medium"
                 >
                   {isRegister ? 'Already have an account? Sign In' : "Don't have an account? Create One"}
+                </button>
+              </div>
+
+              <div className="pt-3 border-t border-white/[0.08] mt-3 flex items-center justify-center gap-1.5 text-xs text-slate-400">
+                <ShieldCheck className="w-3.5 h-3.5 text-orange-400" />
+                <span>Publisher Staff?</span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsAuthModalOpen(false);
+                    setIsAdminLoginModalOpen(true);
+                  }}
+                  className="text-orange-400 hover:text-orange-300 font-semibold underline ml-1 cursor-pointer"
+                >
+                  Admin Portal Login
                 </button>
               </div>
             </form>

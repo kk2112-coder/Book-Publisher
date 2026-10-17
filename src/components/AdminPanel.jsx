@@ -16,7 +16,10 @@ import {
   ShoppingBag, 
   Star, 
   Eye,
+  EyeOff,
   Lock,
+  Key,
+  Sparkles,
   ArrowRight
 } from 'lucide-react';
 
@@ -40,6 +43,7 @@ export const AdminPanel = () => {
 
   const [adminTab, setAdminTab] = useState('inventory'); // 'inventory' | 'submissions' | 'orders' | 'settings'
   const [passwordInput, setPasswordInput] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingBook, setEditingBook] = useState(null);
 
@@ -112,30 +116,43 @@ export const AdminPanel = () => {
   if (!isAdminAuthenticated) {
     return (
       <div className="max-w-md mx-auto my-16 p-8 rounded-3xl bg-[#0e101a] border border-orange-500/30 text-white shadow-2xl shadow-orange-950/40 text-center animate-fade-in">
-        <div className="w-14 h-14 mx-auto rounded-2xl bg-orange-500/20 border border-orange-500/40 flex items-center justify-center text-orange-400 mb-4">
+        <div className="w-14 h-14 mx-auto rounded-2xl bg-gradient-to-br from-orange-500/20 to-amber-500/30 border border-orange-500/40 flex items-center justify-center text-orange-400 mb-4 shadow-lg shadow-orange-500/20">
           <ShieldCheck className="w-7 h-7" />
         </div>
-        <h2 className="text-2xl font-bold mb-1">Publisher Admin Portal</h2>
+        <h2 className="text-2xl font-bold mb-1 tracking-wide">Publisher Admin Portal</h2>
         <p className="text-xs text-slate-400 mb-6">
           Separate administrative control panel to manage book catalogue, approvals, pricing, and system revenue.
         </p>
 
         <form onSubmit={handleLogin} className="space-y-4">
           <div className="relative">
+            <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400">
+              <Key className="w-4 h-4" />
+            </div>
             <input
-              type="password"
+              type={showPassword ? 'text' : 'password'}
               placeholder="Enter Admin Password (default: admin)"
               value={passwordInput}
               onChange={(e) => setPasswordInput(e.target.value)}
-              className="w-full bg-[#131622] rounded-xl px-4 py-3 text-sm text-white border border-white/[0.1] focus:outline-none focus:border-orange-500/80 font-mono text-center"
+              className="w-full bg-[#131622] rounded-xl pl-10 pr-11 py-3 text-sm text-white placeholder-slate-400 border border-white/[0.1] focus:outline-none focus:border-orange-500/80 font-mono text-center"
             />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white transition-colors p-1"
+              aria-label={showPassword ? 'Hide password' : 'Show password'}
+            >
+              {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+            </button>
           </div>
 
           <button
             type="submit"
-            className="w-full btn-glow-primary py-3 rounded-xl text-white font-bold text-xs shadow-lg cursor-pointer"
+            className="w-full btn-glow-primary py-3 rounded-xl text-white font-bold text-xs shadow-lg cursor-pointer flex items-center justify-center gap-2"
           >
-            Authenticate Admin Control
+            <ShieldCheck className="w-4 h-4" />
+            <span>Authenticate Admin Control</span>
+            <ArrowRight className="w-3.5 h-3.5" />
           </button>
 
           <button
@@ -144,9 +161,10 @@ export const AdminPanel = () => {
               setIsAdminAuthenticated(true);
               notify('Entered Admin Mode with Demo Passkey!');
             }}
-            className="w-full py-2.5 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] text-xs font-semibold text-slate-300 transition-all cursor-pointer"
+            className="w-full py-2.5 px-4 rounded-xl bg-orange-500/10 hover:bg-orange-500/20 text-orange-400 hover:text-orange-300 border border-orange-500/30 text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer"
           >
-            Quick 1-Click Demo Login
+            <Sparkles className="w-4 h-4 text-amber-400" />
+            <span>Quick 1-Click Demo Login (Passkey: admin)</span>
           </button>
         </form>
       </div>
