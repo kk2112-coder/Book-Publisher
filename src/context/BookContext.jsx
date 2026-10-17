@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { INITIAL_BOOKS } from '../data/initialBooks';
+import { translations } from '../utils/i18n';
 import confetti from 'canvas-confetti';
 
 const BookContext = createContext();
@@ -9,7 +10,9 @@ const STORAGE_KEYS = {
   LIBRARY: 'lumina_library_v1',
   ORDERS: 'lumina_orders_v1',
   SETTINGS: 'lumina_settings_v1',
-  USER_LISTINGS: 'lumina_user_listings_v1'
+  USER: 'lumina_user_v1',
+  THEME: 'lumina_theme_v1',
+  LANG: 'lumina_lang_v1'
 };
 
 const DEFAULT_SETTINGS = {
@@ -23,6 +26,47 @@ const DEFAULT_SETTINGS = {
 };
 
 export const BookProvider = ({ children }) => {
+  // Theme (Dark or Light)
+  const [theme, setTheme] = useState(() => {
+    try {
+      return localStorage.getItem(STORAGE_KEYS.THEME) || 'dark';
+    } catch {
+      return 'dark';
+    }
+  });
+
+  // Language
+  const [language, setLanguage] = useState(() => {
+    try {
+      return localStorage.getItem(STORAGE_KEYS.LANG) || 'en';
+    } catch {
+      return 'en';
+    }
+  });
+
+  // Translation helper
+  const t = (key) => {
+    return translations[language]?.[key] || translations['en']?.[key] || key;
+  };
+
+  // Sync theme to document root
+  useEffect(() => {
+    const root = document.documentElement;
+    if (theme === 'dark') {
+      root.classList.add('dark');
+      root.classList.remove('light');
+    } else {
+      root.classList.remove('dark');
+      root.classList.add('light');
+    }
+    localStorage.setItem(STORAGE_KEYS.THEME, theme);
+  }, [theme]);
+
+  // Sync language
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEYS.LANG, language);
+  }, [language]);
+
   // Load Books
   const [books, setBooks] = useState(() => {
     try {
@@ -33,11 +77,11 @@ export const BookProvider = ({ children }) => {
     }
   });
 
-  // User Purchased Library (Default has book-1 or empty)
+  // User Purchased Library
   const [myLibrary, setMyLibrary] = useState(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEYS.LIBRARY);
-      return saved ? JSON.parse(saved) : ['book-1']; // Give 1 initial book so user can immediately test reading & downloading
+      return saved ? JSON.parse(saved) : ['book-1'];
     } catch {
       return ['book-1'];
     }
@@ -73,30 +117,46 @@ export const BookProvider = ({ children }) => {
     }
   });
 
+  // Current User
+  const [currentUser, setCurrentUser] = useState(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEYS.USER);
+      return saved ? JSON.parse(saved) : {
+        name: 'Alex Mercer',
+        email: 'alex.reader@lumina.io',
+        avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80',
+        role: 'Reader & Creator'
+      };
+    } catch {
+      return {
+        name: 'Alex Mercer',
+        email: 'alex.reader@lumina.io',
+        avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80',
+        role: 'Reader & Creator'
+      };
+    }
+  });
+
   // Navigation & UI States
-  const [activeTab, setActiveTab] = useState('store'); // 'store' | 'community' | 'library' | 'my-listings' | 'admin'
+  const [activeTab, setActiveTab] = useState('store'); // 'store' | 'community' | 'library' | 'analytics' | 'admin'
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All Books');
-  const [sortBy, setSortBy] = useState('featured'); // 'featured', 'rating', 'price-low', 'price-high'
+  const [sortBy, setSortBy] = useState('featured');
 
-  // Modals & Panels
+  // Modals
   const [currentReaderBook, setCurrentReaderBook] = useState(null);
   const [currentModalBook, setCurrentModalBook] = useState(null);
   const [isSellModalOpen, setIsSellModalOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
-  const [checkoutTarget, setCheckoutTarget] = useState(null); // specific book or null for whole cart
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [isContactModalOpen, setIsContactModalOpen] = useState(false);
+  const [checkoutTarget, setCheckoutTarget] = useState(null);
   const [cart, setCart] = useState([]);
   const [toast, setToast] = useState(null);
   const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false);
-  const [currentUser, setCurrentUser] = useState({
-    name: 'Alex Mercer',
-    email: 'alex.reader@lumina.io',
-    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80',
-    role: 'Reader & Creator'
-  });
 
-  // Save changes to localStorage
+  // Persistence effects
   useEffect(() => {
     localStorage.setItem(STORAGE_KEYS.BOOKS, JSON.stringify(books));
   }, [books]);
@@ -112,6 +172,12 @@ export const BookProvider = ({ children }) => {
   useEffect(() => {
     localStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(settings));
   }, [settings]);
+
+  useEffect(() => {
+    if (currentUser) {
+      localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(currentUser));
+    }
+  }, [currentUser]);
 
   // Toast helper
   const notify = (message, type = 'success') => {
@@ -142,18 +208,13 @@ export const BookProvider = ({ children }) => {
 
   const clearCart = () => setCart([]);
 
-  // Check if book is owned
-  const isBookOwned = (bookId) => {
-    return myLibrary.includes(bookId);
-  };
+  const isBookOwned = (bookId) => myLibrary.includes(bookId);
 
-  // Open Checkout for a single book or whole cart
   const initiateCheckout = (book = null) => {
     setCheckoutTarget(book);
     setIsCheckoutOpen(true);
   };
 
-  // Complete Order
   const completePurchase = (paymentInfo) => {
     const itemsToBuy = checkoutTarget ? [checkoutTarget] : cart;
     if (itemsToBuy.length === 0) return;
@@ -161,30 +222,26 @@ export const BookProvider = ({ children }) => {
     const totalAmount = itemsToBuy.reduce((sum, item) => sum + item.price, 0);
     const newBookIds = itemsToBuy.map((b) => b.id);
 
-    // Update library
     setMyLibrary((prev) => Array.from(new Set([...prev, ...newBookIds])));
 
-    // Create order record
     const newOrder = {
       id: `ORD-${Math.floor(10000 + Math.random() * 90000)}`,
       date: new Date().toLocaleString('en-US', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
       items: itemsToBuy.map((b) => ({ id: b.id, title: b.title, price: b.price, author: b.author })),
       total: totalAmount,
       paymentMethod: paymentInfo.method || 'Credit Card (Instant)',
-      customerEmail: paymentInfo.email || currentUser.email,
+      customerEmail: paymentInfo.email || currentUser?.email || 'customer@example.com',
       status: 'Completed'
     };
 
     setOrders((prev) => [newOrder, ...prev]);
 
-    // Increment downloads count on books
     setBooks((prev) =>
       prev.map((b) =>
         newBookIds.includes(b.id) ? { ...b, downloads: (b.downloads || 0) + 1 } : b
       )
     );
 
-    // Remove bought items from cart
     if (checkoutTarget) {
       setCart((prev) => prev.filter((i) => i.id !== checkoutTarget.id));
     } else {
@@ -194,7 +251,6 @@ export const BookProvider = ({ children }) => {
     setIsCheckoutOpen(false);
     setCheckoutTarget(null);
 
-    // Confetti explosion
     try {
       confetti({
         particleCount: 120,
@@ -202,14 +258,11 @@ export const BookProvider = ({ children }) => {
         origin: { y: 0.6 },
         colors: ['#ff6a00', '#ff9436', '#ffb366', '#ffffff']
       });
-    } catch (e) {
-      // safe fallback
-    }
+    } catch {}
 
-    notify(`Purchase Successful! All books added to your Library with instant PDF downloads.`);
+    notify(`Purchase Successful! Unlocked full book & instant PDF download.`);
   };
 
-  // User submits book for selling in community marketplace
   const uploadUserBook = (newBook) => {
     const bookEntry = {
       ...newBook,
@@ -218,20 +271,19 @@ export const BookProvider = ({ children }) => {
       reviewsCount: 1,
       downloads: 0,
       isOfficial: false,
-      sellerName: currentUser.name,
-      sellerEmail: currentUser.email,
+      sellerName: currentUser?.name || 'Community Author',
+      sellerEmail: currentUser?.email || 'creator@example.com',
       sellerId: 'user-self',
-      status: 'approved', // automatic approval or pending in admin
+      status: 'approved',
       releaseDate: new Date().toLocaleString('en-US', { month: 'short', year: 'numeric' }),
       featured: false,
       sampleLimit: 3
     };
 
     setBooks((prev) => [bookEntry, ...prev]);
-    notify(`Congratulations! "${newBook.title}" is now published on Lumina Marketplace!`);
+    notify(`Congratulations! "${newBook.title}" is published on Lumina Marketplace!`);
   };
 
-  // Admin Controls
   const adminAddBook = (bookData) => {
     const newBook = {
       ...bookData,
@@ -283,17 +335,13 @@ export const BookProvider = ({ children }) => {
     notify('Reset to default publisher catalog & settings.', 'info');
   };
 
-  // Filtered and Sorted books
   const filteredBooks = books.filter((book) => {
-    // Admin sees all books; public sees approved books
     if (book.status === 'rejected') return false;
 
-    // Filter by tab
     if (activeTab === 'community') {
       if (book.isOfficial) return false;
     }
 
-    // Filter by category
     if (selectedCategory !== 'All Books') {
       if (selectedCategory === 'Community Marketplace') {
         if (book.isOfficial) return false;
@@ -302,7 +350,6 @@ export const BookProvider = ({ children }) => {
       }
     }
 
-    // Filter by search query
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
       const matchTitle = book.title?.toLowerCase().includes(q);
@@ -320,7 +367,6 @@ export const BookProvider = ({ children }) => {
     if (sortBy === 'price-low') return a.price - b.price;
     if (sortBy === 'price-high') return b.price - a.price;
     if (sortBy === 'downloads') return (b.downloads || 0) - (a.downloads || 0);
-    // default featured
     return (b.featured ? 1 : 0) - (a.featured ? 1 : 0);
   });
 
@@ -350,6 +396,10 @@ export const BookProvider = ({ children }) => {
         setIsCartOpen,
         isCheckoutOpen,
         setIsCheckoutOpen,
+        isAuthModalOpen,
+        setIsAuthModalOpen,
+        isContactModalOpen,
+        setIsContactModalOpen,
         checkoutTarget,
         cart,
         addToCart,
@@ -370,13 +420,17 @@ export const BookProvider = ({ children }) => {
         currentUser,
         setCurrentUser,
         toast,
-        notify
+        notify,
+        theme,
+        setTheme,
+        language,
+        setLanguage,
+        t
       }}
     >
       {children}
-      {/* Toast Notification Element */}
       {toast && (
-        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-3 px-5 py-3.5 rounded-xl glass-panel-glow border border-orange-500/40 text-white shadow-2xl animate-fade-in text-sm font-medium">
+        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-3 px-5 py-3.5 rounded-xl glass-panel-glow border border-orange-500/40 text-white shadow-2xl animate-fade-in text-xs font-semibold">
           <span className="w-2.5 h-2.5 rounded-full bg-orange-500 animate-ping"></span>
           <span>{toast.message}</span>
         </div>

@@ -2,15 +2,84 @@
 <html lang="en" class="dark">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ff6a00'><path d='M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5'/></svg>" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>LUMINA PRESS | Modern Book Publisher & Marketplace</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&display=swap" rel="stylesheet">
+    <title>LUMINA PRESS | Digital Book Publisher, Reader & Marketplace</title>
+    
+    <!-- Primary Meta Tags -->
+    <meta name="title" content="LUMINA PRESS | Digital Book Publisher, Reader & Marketplace" />
+    <meta name="description" content="Read interactive sample previews, purchase instant DRM-free PDF books, and sell your own literature with 85% author royalties on Lumina Press." />
+    <meta name="keywords" content="book publisher, digital books, buy books, sell books, PDF books, DRM-free books, edge computing, cyberpunk, AI books, reading platform" />
+    <meta name="author" content="Lumina Press" />
+    <meta name="robots" content="index, follow" />
+    <meta name="theme-color" content="#ff6a00" />
+    <link rel="canonical" href="https://book-publisher-ten.vercel.app/" />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://book-publisher-ten.vercel.app/" />
+    <meta property="og:title" content="LUMINA PRESS | Digital Book Publisher, Reader & Marketplace" />
+    <meta property="og:description" content="Experience modern literature. Read interactive sample previews online, purchase with instant access, and export high-resolution PDFs." />
+    <meta property="og:image" content="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&h=630&q=80" />
+    <meta property="og:site_name" content="Lumina Press" />
+    <meta property="og:locale" content="en_US" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="https://book-publisher-ten.vercel.app/" />
+    <meta name="twitter:title" content="LUMINA PRESS | Digital Book Publisher & Marketplace" />
+    <meta name="twitter:description" content="Read sample previews online, purchase instant DRM-free PDF books, and self-publish with 85% royalties." />
+    <meta name="twitter:image" content="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&h=630&q=80" />
+
+    <!-- PWA Manifest & Favicon -->
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ff6a00'><path d='M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5'/></svg>" />
+
+    <!-- Fonts: Preconnect & Asynchronous Loading -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+    <!-- JSON-LD Structured Data for Search Engines -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BookStore",
+      "name": "Lumina Press",
+      "url": "https://book-publisher-ten.vercel.app/",
+      "logo": "https://book-publisher-ten.vercel.app/favicon.svg",
+      "description": "Next-generation digital book publisher, reading platform and community author marketplace.",
+      "sameAs": [
+        "https://twitter.com/luminapress",
+        "https://github.com/kk2112-coder/Book-Publisher"
+      ],
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://book-publisher-ten.vercel.app/?search={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
   </head>
-  <body class="bg-[#08090d] text-slate-100 antialiased selection:bg-orange-500 selection:text-white min-h-screen">
-    <div id="root"></div>
+  <body class="bg-[#07080c] text-slate-100 antialiased selection:bg-orange-500 selection:text-white min-h-screen">
+    <div id="root">
+      <!-- Semantic Static Pre-Render for SEO Crawlers & Instant FCP -->
+      <noscript>
+        <div style="padding: 40px; text-align: center; color: #fff; background: #07080c; font-family: sans-serif;">
+          <h1>Lumina Press — Modern Book Publisher & Marketplace</h1>
+          <p>Read interactive sample previews online, purchase with instant access, and export verified DRM-free PDFs.</p>
+          <p>Please enable JavaScript to enjoy our full interactive reader experience.</p>
+        </div>
+      </noscript>
+    </div>
+
+    <!-- Service Worker Registration -->
+    <script>
+      if ('serviceWorker' in navigator && window.location.protocol.startsWith('http')) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW registration note:', err));
+        });
+      }
+    </script>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

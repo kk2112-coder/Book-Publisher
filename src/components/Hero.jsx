@@ -3,13 +3,10 @@ import { useBooks } from '../context/BookContext';
 import { 
   ArrowRight, 
   BookOpen, 
-  Sparkles, 
   DownloadCloud, 
   Cpu, 
   ShieldCheck, 
   Zap, 
-  Globe2, 
-  Layers,
   FileCheck
 } from 'lucide-react';
 
@@ -18,15 +15,14 @@ export const Hero = () => {
     settings, 
     books, 
     setCurrentReaderBook, 
-    setActiveTab, 
-    setIsSellModalOpen 
+    setIsSellModalOpen,
+    t 
   } = useBooks();
 
-  // Find the flagship featured book
   const flagshipBook = books.find((b) => b.id === 'book-1') || books[0];
 
   return (
-    <div className="relative pt-8 pb-16 md:pt-14 md:pb-24 overflow-hidden">
+    <section className="relative pt-8 pb-16 md:pt-14 md:pb-24 overflow-hidden" aria-labelledby="hero-title">
       {/* Background Ambient Glow Flare (Referenced from Pinterest design) */}
       <div className="absolute top-0 right-1/4 -translate-y-12 w-[550px] h-[350px] bg-gradient-to-bl from-orange-500/25 via-amber-600/10 to-transparent blur-[110px] pointer-events-none rounded-full"></div>
       <div className="absolute top-1/3 left-1/4 w-[400px] h-[250px] bg-gradient-to-tr from-orange-600/15 via-red-600/5 to-transparent blur-[120px] pointer-events-none rounded-full"></div>
@@ -41,12 +37,12 @@ export const Hero = () => {
         </div>
 
         {/* Hero Headline */}
-        <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-white mb-6 leading-[1.12]">
+        <h1 id="hero-title" className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-white mb-6 leading-[1.12]">
           {settings.siteHeadline || 'Publish, Discover & Own Extraordinary Books'}
         </h1>
 
         {/* Hero Subtitle */}
-        <p className="max-w-2xl mx-auto text-base sm:text-lg text-slate-400 leading-relaxed mb-9">
+        <p className="max-w-2xl mx-auto text-base sm:text-lg text-slate-300 leading-relaxed mb-9">
           {settings.siteSubheadline || 
             'Read interactive sample previews online, purchase with instant access, and export verified DRM-free PDFs directly to your digital library.'}
         </p>
@@ -60,7 +56,7 @@ export const Hero = () => {
             }}
             className="btn-glow-primary px-7 py-3.5 rounded-full text-white text-sm font-bold flex items-center gap-2 group cursor-pointer"
           >
-            <span>Explore Catalog</span>
+            <span>{t('exploreBooks')}</span>
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </button>
 
@@ -71,7 +67,7 @@ export const Hero = () => {
             className="px-6 py-3.5 rounded-full bg-[#121422] hover:bg-[#181b2e] text-slate-200 hover:text-white text-sm font-semibold border border-white/[0.12] hover:border-orange-500/40 transition-all flex items-center gap-2 cursor-pointer shadow-lg shadow-black/40"
           >
             <BookOpen className="w-4 h-4 text-orange-400" />
-            <span>Preview Flagship Book (Free)</span>
+            <span>{t('freePreview')} (Sample Pages)</span>
           </button>
 
           <button
@@ -79,24 +75,15 @@ export const Hero = () => {
             className="px-6 py-3.5 rounded-full bg-[#121422] hover:bg-amber-500/10 text-amber-300 hover:text-amber-200 text-sm font-semibold border border-amber-500/30 transition-all flex items-center gap-2 cursor-pointer"
           >
             <Zap className="w-4 h-4 text-amber-400" />
-            <span>Sell Your Book</span>
+            <span>{t('sellBook')}</span>
           </button>
         </div>
 
-        {/* Pinterest Reference Interactive Node Diagram (Visual Schematics) */}
+        {/* Pinterest Reference Interactive Node Diagram */}
         <div className="relative mx-auto max-w-4xl p-6 sm:p-8 rounded-2xl glass-panel-glow border border-orange-500/25 shadow-2xl shadow-orange-950/20">
-          {/* Subtle grid pattern background */}
-          <div 
-            className="absolute inset-0 rounded-2xl opacity-15 pointer-events-none"
-            style={{
-              backgroundImage: 'radial-gradient(rgba(255, 106, 0, 0.4) 1px, transparent 1px)',
-              backgroundSize: '24px 24px'
-            }}
-          ></div>
-
           <div className="relative z-10 flex flex-col items-center">
             {/* Top Tag */}
-            <div className="text-[11px] font-mono tracking-widest uppercase text-slate-400 mb-8 flex items-center gap-2">
+            <div className="text-[11px] font-mono tracking-widest uppercase text-slate-300 mb-8 flex items-center gap-2">
               <span className="w-1.5 h-1.5 rounded-full bg-orange-500"></span>
               <span>LUMINA PUBLISHER ARCHITECTURE MESH</span>
               <span className="w-1.5 h-1.5 rounded-full bg-orange-500"></span>
@@ -109,16 +96,16 @@ export const Hero = () => {
                 <div className="w-9 h-9 rounded-lg bg-orange-500/10 border border-orange-500/30 flex items-center justify-center mb-3 text-orange-400 group-hover:scale-110 transition-transform">
                   <BookOpen className="w-4 h-4" />
                 </div>
-                <h4 className="text-xs font-bold text-white mb-1">Free 3-Page Sample</h4>
+                <h2 className="text-xs font-bold text-white mb-1">Free 3-Page Sample</h2>
                 <p className="text-[11px] text-slate-400 leading-tight">Inspect typography, prose, and chapters before purchase.</p>
               </div>
 
-              {/* Connecting line / arrow on desktop */}
+              {/* Connecting line */}
               <div className="hidden md:flex justify-center items-center">
                 <div className="w-full h-[1px] bg-gradient-to-r from-orange-500/40 to-orange-500"></div>
               </div>
 
-              {/* Central Core (AI / Core Hub from reference image) */}
+              {/* Central Core */}
               <div className="relative p-5 rounded-2xl bg-gradient-to-b from-[#181a29] to-[#0f111d] border-2 border-orange-500/60 shadow-xl shadow-orange-500/20 text-center scale-105">
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-full bg-orange-600 text-white text-[9px] font-bold uppercase tracking-wider">
                   Core Engine
@@ -126,11 +113,11 @@ export const Hero = () => {
                 <div className="w-12 h-12 mx-auto rounded-xl bg-orange-500/20 border border-orange-400/50 flex items-center justify-center mb-2.5 text-orange-400">
                   <Cpu className="w-6 h-6 animate-pulse" />
                 </div>
-                <h3 className="text-sm font-extrabold text-white">LUMINA PROTOCOL</h3>
-                <p className="text-[10px] text-orange-300/80 font-mono mt-0.5">Automated Paywall & PDF</p>
+                <h2 className="text-sm font-extrabold text-white">LUMINA PROTOCOL</h2>
+                <p className="text-[10px] text-orange-300 font-mono mt-0.5">Automated Paywall & PDF</p>
               </div>
 
-              {/* Connecting line / arrow on desktop */}
+              {/* Connecting line */}
               <div className="hidden md:flex justify-center items-center">
                 <div className="w-full h-[1px] bg-gradient-to-r from-orange-500 to-orange-500/40"></div>
               </div>
@@ -140,7 +127,7 @@ export const Hero = () => {
                 <div className="w-9 h-9 rounded-lg bg-orange-500/10 border border-orange-500/30 flex items-center justify-center mb-3 text-orange-400 group-hover:scale-110 transition-transform">
                   <DownloadCloud className="w-4 h-4" />
                 </div>
-                <h4 className="text-xs font-bold text-white mb-1">Instant PDF Export</h4>
+                <h2 className="text-xs font-bold text-white mb-1">Instant PDF Export</h2>
                 <p className="text-[11px] text-slate-400 leading-tight">One-click DRM-free high-res PDF generation for buyers.</p>
               </div>
             </div>
@@ -174,6 +161,6 @@ export const Hero = () => {
           </div>
         </div>
       </div>
-    </div>
+    </section>
   );
 };

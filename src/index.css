@@ -12,10 +12,46 @@
     background-color: #07080c;
     color: #e2e8f0;
     overflow-x: hidden;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  html.light body {
+    background-color: #f8fafc;
+    color: #0f172a;
+  }
+
+  html.light .glass-panel {
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    color: #0f172a;
+  }
+
+  html.light .glass-panel-glow {
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(255, 106, 0, 0.3);
+    box-shadow: 0 10px 30px -10px rgba(255, 106, 0, 0.15);
+    color: #0f172a;
+  }
+
+  html.light header {
+    background-color: rgba(255, 255, 255, 0.95);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  }
+
+  html.light footer {
+    background-color: #f1f5f9;
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+    color: #475569;
   }
 
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-heading);
+  }
+
+  /* Accessible focus outline */
+  *:focus-visible {
+    outline: 2px solid #ff6a00 !important;
+    outline-offset: 2px !important;
   }
 }
 
