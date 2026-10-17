@@ -253,7 +253,7 @@ export const BookReader = () => {
             </div>
           ) : (
             /* Open Content View */
-            <div className="flex-1 flex flex-col justify-between">
+            <div key={currentPage} className="flex-1 flex flex-col justify-between animate-page-turn">
               <div>
                 {/* Running Header */}
                 <div className="flex items-center justify-between text-[11px] uppercase tracking-widest opacity-60 pb-4 mb-6 border-b border-current/10 font-mono">

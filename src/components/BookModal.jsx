@@ -43,10 +43,10 @@ export const BookModal = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fade-in">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-fade-in" role="dialog" aria-modal="true">
       <div 
         onClick={(e) => e.stopPropagation()}
-        className="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-3xl bg-[#0d0f18] border border-white/[0.1] shadow-2xl shadow-orange-950/40 p-6 sm:p-8 text-white"
+        className="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-3xl bg-[#0d0f18] border border-white/[0.1] shadow-2xl shadow-orange-950/40 p-6 sm:p-8 text-white animate-scale-in"
       >
         {/* Close Button */}
         <button

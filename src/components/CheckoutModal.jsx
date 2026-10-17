@@ -48,10 +48,10 @@ export const CheckoutModal = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fade-in">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-fade-in" role="dialog" aria-modal="true">
       <div 
         onClick={(e) => e.stopPropagation()}
-        className="relative w-full max-w-xl rounded-3xl bg-[#0c0e17] border border-orange-500/30 shadow-2xl shadow-orange-950/40 p-6 sm:p-8 text-white overflow-hidden"
+        className="relative w-full max-w-xl rounded-3xl bg-[#0c0e17] border border-orange-500/30 shadow-2xl shadow-orange-950/40 p-6 sm:p-8 text-white overflow-hidden animate-scale-in"
       >
         {/* Glow ambient */}
         <div className="absolute top-0 right-0 w-48 h-48 bg-orange-500/10 blur-[80px] pointer-events-none rounded-full"></div>

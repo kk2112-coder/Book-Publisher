@@ -39,7 +39,7 @@ export const BookCard = ({ book }) => {
   return (
     <article 
       onClick={() => setCurrentModalBook(book)}
-      className="group relative flex flex-col rounded-2xl bg-[#0f111a] border border-white/[0.08] hover:border-orange-500/40 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-orange-950/30 overflow-hidden cursor-pointer"
+      className="group relative flex flex-col rounded-2xl bg-[#0f111a] border border-white/[0.08] card-3d-hover animate-fade-in-up overflow-hidden cursor-pointer"
       aria-label={`Book card: ${book.title} by ${book.author}`}
     >
       {/* Top Image Banner with Cover */}
@@ -49,7 +49,7 @@ export const BookCard = ({ book }) => {
           alt={`Cover artwork for ${book.title} by ${book.author}`}
           width="400"
           height="500"
-          className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500 opacity-90 group-hover:opacity-100"
+          className="w-full h-full object-cover object-center group-hover:scale-108 transition-transform duration-700 ease-out opacity-90 group-hover:opacity-100"
           loading="lazy"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-[#0f111a] via-[#0f111a]/40 to-transparent"></div>

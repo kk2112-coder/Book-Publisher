@@ -92,7 +92,7 @@ export const Hero = () => {
             {/* Nodes Layout */}
             <div className="w-full grid grid-cols-1 md:grid-cols-5 gap-4 items-center">
               {/* Node 1 */}
-              <div className="p-4 rounded-xl bg-[#0b0d17]/80 border border-white/[0.08] hover:border-orange-500/50 transition-all text-left group">
+              <div className="p-4 rounded-xl bg-[#0b0d17]/80 border border-white/[0.08] hover:border-orange-500/50 transition-all text-left group animate-float">
                 <div className="w-9 h-9 rounded-lg bg-orange-500/10 border border-orange-500/30 flex items-center justify-center mb-3 text-orange-400 group-hover:scale-110 transition-transform">
                   <BookOpen className="w-4 h-4" />
                 </div>
@@ -102,11 +102,11 @@ export const Hero = () => {
 
               {/* Connecting line */}
               <div className="hidden md:flex justify-center items-center">
-                <div className="w-full h-[1px] bg-gradient-to-r from-orange-500/40 to-orange-500"></div>
+                <div className="w-full h-[1px] bg-gradient-to-r from-orange-500/40 to-orange-500 animate-pulse"></div>
               </div>
 
               {/* Central Core */}
-              <div className="relative p-5 rounded-2xl bg-gradient-to-b from-[#181a29] to-[#0f111d] border-2 border-orange-500/60 shadow-xl shadow-orange-500/20 text-center scale-105">
+              <div className="relative p-5 rounded-2xl bg-gradient-to-b from-[#181a29] to-[#0f111d] border-2 border-orange-500/60 shadow-xl shadow-orange-500/20 text-center scale-105 transition-transform duration-500 hover:scale-108">
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-full bg-orange-600 text-white text-[9px] font-bold uppercase tracking-wider">
                   Core Engine
                 </div>
@@ -119,11 +119,11 @@ export const Hero = () => {
 
               {/* Connecting line */}
               <div className="hidden md:flex justify-center items-center">
-                <div className="w-full h-[1px] bg-gradient-to-r from-orange-500 to-orange-500/40"></div>
+                <div className="w-full h-[1px] bg-gradient-to-r from-orange-500 to-orange-500/40 animate-pulse"></div>
               </div>
 
               {/* Node 2 */}
-              <div className="p-4 rounded-xl bg-[#0b0d17]/80 border border-white/[0.08] hover:border-orange-500/50 transition-all text-left group">
+              <div className="p-4 rounded-xl bg-[#0b0d17]/80 border border-white/[0.08] hover:border-orange-500/50 transition-all text-left group animate-float-delayed">
                 <div className="w-9 h-9 rounded-lg bg-orange-500/10 border border-orange-500/30 flex items-center justify-center mb-3 text-orange-400 group-hover:scale-110 transition-transform">
                   <DownloadCloud className="w-4 h-4" />
                 </div>
