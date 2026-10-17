@@ -183,6 +183,20 @@ export const Navbar = () => {
           </button>
 
           <button
+            onClick={() => {
+              setActiveTab('store');
+              setTimeout(() => {
+                const el = document.getElementById('cinematic-showcase');
+                if (el) el.scrollIntoView({ behavior: 'smooth' });
+              }, 100);
+            }}
+            className="px-3 py-2 rounded-lg text-xs font-semibold text-amber-300 hover:text-white hover:bg-amber-500/10 transition-all flex items-center gap-1.5 cursor-pointer"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+            <span>Cinematic Frames</span>
+          </button>
+
+          <button
             onClick={() => setActiveTab('analytics')}
             className={`px-3 py-2 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 ${
               activeTab === 'analytics'
@@ -540,6 +554,20 @@ export const Navbar = () => {
               }`}
             >
               {t('communityMarket')}
+            </button>
+            <button
+              onClick={() => {
+                setActiveTab('store');
+                setMobileMenuOpen(false);
+                setTimeout(() => {
+                  const el = document.getElementById('cinematic-showcase');
+                  if (el) el.scrollIntoView({ behavior: 'smooth' });
+                }, 100);
+              }}
+              className="text-left px-3 py-2 rounded-lg text-xs font-semibold text-amber-300 bg-amber-500/10 flex items-center gap-1.5"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+              <span>Cinematic Frames</span>
             </button>
             <button
               onClick={() => { setActiveTab('library'); setMobileMenuOpen(false); }}

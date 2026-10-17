@@ -1,5 +1,38 @@
 export const INITIAL_BOOKS = [
   {
+    id: 'book-empire-vision',
+    title: 'Empire of Vision',
+    subtitle: 'The Architectural Treatise on Perception, Sovereignty, and the Human Eye',
+    author: 'Alejandro V. Ramos',
+    authorRole: 'Master Scholar & Epistemologist, Madrid',
+    price: 26.50,
+    originalPrice: 42.00,
+    rating: 4.95,
+    reviewsCount: 418,
+    category: 'Philosophy & Mind',
+    coverImage: '/frames/frame-1.png',
+    totalPages: 384,
+    sampleLimit: 3,
+    featured: true,
+    isOfficial: true,
+    status: 'approved',
+    downloads: 2410,
+    releaseDate: 'October 2026',
+    description: 'An illustrious philosophical journey across classical perspective, digital cognition, and the sacred act of physical reading. Alejandro V. Ramos synthesizes five centuries of European aesthetic theory with the sovereign digital library movement.',
+    previewPages: [
+      `PROLOGUE: THE GAZE ACROSS THE DESK\n\nTo behold a book in the quiet amber glow of afternoon light is to engage in an ancient communion. Before a word is processed by the visual cortex, the hand knows what the eye merely anticipates. The textured cloth of the binding, the subtle indentation of debossed gold foil, the aromatic memory of pressed paper and cedarwood.\n\nIn our hyper-connected epoch, we have confused velocity for vision. We consume thousands of transient notifications, yet see almost nothing. To establish an Empire of Vision is to reclaim the sanctuary of contemplation.\n\nAs my fingers rest upon this cover, I invite you to slow your breath, observe the interplay of shadow and light, and rediscover the dignity of deliberate thought.`,
+      `CHAPTER 1: THE TACTILE ARCHITECTURE OF THOUGHT\n\nThe human hand is not an accessory to the mind; it is its primary instrument of calibration. Aristotle observed that the hand is the instrument of instruments. When Gutenberg cast movable type in Mainz, he did not simply mechanize scribal labor—he gave geometric permanence to human speech.\n\nIn the chapters that follow, we trace the optical geometry of Alberti and Brunelleschi, demonstrating how linear perspective reshaped European consciousness from the Italian Renaissance to contemporary digital spaces.`,
+      `CHAPTER 2: LIGHT, SHADOW, AND COGNITIVE DEPTH\n\nObserve how sunlight angles through mullioned glass windows, illuminating dust particles suspended like microscopic constellations in the air. A cup of coffee cools quietly on the walnut grain. These are not incidental details; they are the physical anchors of focus.\n\nWithout physical anchoring, digital literature evaporates into cognitive mist. By uniting physical craftsmanship with sovereign cryptographic ownership, we resurrect the library not as a subscription stream, but as a permanent citadel of the spirit.`
+    ],
+    chapters: [
+      { id: 1, title: 'Prologue: The Gaze Across the Desk', content: 'To behold a book in the quiet amber glow of afternoon light is to engage in an ancient communion. Before a word is processed by the visual cortex, the hand knows what the eye merely anticipates. In our hyper-connected epoch, we have confused velocity for vision. To establish an Empire of Vision is to reclaim the sanctuary of contemplation.' },
+      { id: 2, title: 'Chapter 1: The Tactile Architecture of Thought', content: 'The human hand is not an accessory to the mind; it is its primary instrument of calibration. Aristotle observed that the hand is the instrument of instruments. When Gutenberg cast movable type in Mainz, he gave geometric permanence to human speech.' },
+      { id: 3, title: 'Chapter 2: Light, Shadow, and Cognitive Depth', content: 'Observe how sunlight angles through mullioned glass windows, illuminating dust particles suspended like microscopic constellations in the air. A cup of coffee cools quietly on the walnut grain. These are the physical anchors of focus.' },
+      { id: 4, title: 'Chapter 3: The Golden Ratio of Typography', content: 'The sacred proportions of margins, line height, and kerning that allow the human eye to glide effortlessly across dense philosophical discourse.' },
+      { id: 5, title: 'Chapter 4: The Citadel of Sovereign Ownership', content: 'Why literature must belong permanently to the reader, protected by cryptography and artisanal dignity rather than rented from corporate servers.' }
+    ]
+  },
+  {
     id: 'book-1',
     title: 'Inference at the Edge',
     subtitle: 'Autonomous Systems, Neural Shards and the Next Decentralized Frontier',

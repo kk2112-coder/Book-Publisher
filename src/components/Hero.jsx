@@ -230,6 +230,17 @@ export const Hero = () => {
               </button>
 
               <button
+                onClick={() => {
+                  const el = document.getElementById('cinematic-showcase');
+                  if (el) el.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className="px-6 py-3.5 rounded-full bg-gradient-to-r from-amber-500/20 to-orange-500/20 hover:from-amber-500/30 hover:to-orange-500/30 text-amber-200 hover:text-white text-sm font-semibold border border-amber-500/40 transition-all flex items-center gap-2 cursor-pointer shadow-lg"
+              >
+                <Sparkles className="w-4 h-4 text-amber-400" />
+                <span>Watch Cinematic Film</span>
+              </button>
+
+              <button
                 onClick={() => setActiveTab('library')}
                 className="px-6 py-3.5 rounded-full bg-[#121422] hover:bg-orange-500/10 text-orange-300 hover:text-orange-200 text-sm font-semibold border border-orange-500/30 transition-all flex items-center gap-2 cursor-pointer"
               >

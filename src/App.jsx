@@ -3,6 +3,7 @@ import { BookProvider, useBooks } from './context/BookContext';
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
 import { BookCatalog } from './components/BookCatalog';
+import { CinematicScrollyteller } from './components/CinematicScrollyteller';
 import { BookModal } from './components/BookModal';
 import { CartDrawer } from './components/CartDrawer';
 import { AuthModal } from './components/AuthModal';
@@ -81,6 +82,7 @@ function MainApp() {
         {activeTab === 'store' && (
           <>
             <Hero />
+            <CinematicScrollyteller />
             <BookCatalog />
           </>
         )}

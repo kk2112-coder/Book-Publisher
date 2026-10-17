@@ -403,3 +403,24 @@ button, a {
 ::-webkit-scrollbar-thumb:hover {
   background: #ff6a00;
 }
+
+/* Scrollytelling Styles & Radial Vignette */
+.bg-radial-vignette {
+  background: radial-gradient(circle at center, transparent 40%, rgba(7, 8, 12, 0.8) 100%);
+}
+
+@supports ((animation-timeline: scroll()) and (animation-range: 0% 100%)) {
+  .cinematic-scroll-driver {
+    view-timeline-name: --cinematic-timeline;
+    view-timeline-axis: block;
+  }
+}
+
+/* MANDATORY Accessibility Safety: Disable continuous storytelling motion for sensitive users */
+@media (prefers-reduced-motion: reduce) {
+  .cinematic-scroll-driver,
+  #cinematic-showcase * {
+    animation: none !important;
+    transition: none !important;
+  }
+}

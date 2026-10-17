@@ -234,4 +234,20 @@ describe('Austra Press Core Business Logic Tests', () => {
     // Owned book on page 4: unlocked
     assert.equal(canAccessPageWithoutPaywall(4, true, false), true, 'Owned book unlocks full pages');
   });
+
+  it('should verify Empire of Vision book entry and 5 cinematic animation frames', () => {
+    const empireBook = INITIAL_BOOKS.find(b => b.id === 'book-empire-vision');
+    assert.ok(empireBook, 'Empire of Vision book must exist in catalog');
+    assert.equal(empireBook.title, 'Empire of Vision');
+    assert.equal(empireBook.author, 'Alejandro V. Ramos');
+    assert.equal(empireBook.sampleLimit, 3);
+    assert.ok(empireBook.previewPages.length >= 3);
+
+    // Verify all 5 frame files exist in public/frames/
+    for (let i = 1; i <= 5; i++) {
+      const framePath = path.resolve(`public/frames/frame-${i}.png`);
+      assert.ok(fs.existsSync(framePath), `Cinematic frame-${i}.png must exist`);
+    }
+  });
 });
+
