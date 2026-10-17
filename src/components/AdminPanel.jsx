@@ -485,7 +485,15 @@ export const AdminPanel = () => {
                     <td className="p-3.5 max-w-[240px] truncate text-slate-300">
                       {ord.items?.map(i => i.title).join(', ')}
                     </td>
-                    <td className="p-3.5 text-slate-400">{ord.paymentMethod}</td>
+                    <td className="p-3.5 text-slate-300">
+                      <div className="font-medium">{ord.paymentMethod}</div>
+                      {ord.otpVerified && (
+                        <div className="flex items-center gap-1 text-[10px] text-emerald-400 font-mono mt-0.5">
+                          <ShieldCheck className="w-3 h-3" />
+                          <span>OTP Authenticated</span>
+                        </div>
+                      )}
+                    </td>
                     <td className="p-3.5 font-mono font-bold text-white">${ord.total.toFixed(2)}</td>
                     <td className="p-3.5">
                       <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">

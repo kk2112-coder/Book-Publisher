@@ -226,12 +226,14 @@ export const BookProvider = ({ children }) => {
     setMyLibrary((prev) => Array.from(new Set([...prev, ...newBookIds])));
 
     const newOrder = {
-      id: `ORD-${Math.floor(10000 + Math.random() * 90000)}`,
+      id: paymentInfo?.transactionId || `ORD-${Math.floor(10000 + Math.random() * 90000)}`,
       date: new Date().toLocaleString('en-US', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
       items: itemsToBuy.map((b) => ({ id: b.id, title: b.title, price: b.price, author: b.author })),
       total: totalAmount,
-      paymentMethod: paymentInfo.method || 'Credit Card (Instant)',
-      customerEmail: paymentInfo.email || currentUser?.email || 'customer@example.com',
+      paymentMethod: paymentInfo?.method || 'Credit Card (3D-Secure OTP)',
+      customerEmail: paymentInfo?.email || currentUser?.email || 'customer@example.com',
+      gateway: paymentInfo?.gateway || 'Lumina SecurePay',
+      otpVerified: true,
       status: 'Completed'
     };
 
@@ -249,8 +251,10 @@ export const BookProvider = ({ children }) => {
       clearCart();
     }
 
-    setIsCheckoutOpen(false);
-    setCheckoutTarget(null);
+    if (!paymentInfo?.keepModalOpen) {
+      setIsCheckoutOpen(false);
+      setCheckoutTarget(null);
+    }
 
     try {
       confetti({
@@ -262,6 +266,7 @@ export const BookProvider = ({ children }) => {
     } catch {}
 
     notify(`Purchase Successful! Unlocked full book & instant PDF download.`);
+    return newOrder;
   };
 
   const uploadUserBook = (newBook) => {
