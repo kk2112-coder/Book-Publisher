@@ -42,15 +42,15 @@ export const AuthModal = () => {
     };
 
     setCurrentUser(userObj);
-    localStorage.setItem('lumina_user_v1', JSON.stringify(userObj));
+    localStorage.setItem('austra_user_v1', JSON.stringify(userObj));
     notify(isRegister ? 'Account created successfully!' : 'Signed in successfully!');
     setIsAuthModalOpen(false);
   };
 
   const handleLogout = () => {
     setCurrentUser(null);
-    localStorage.removeItem('lumina_user_v1');
-    notify('Logged out from Lumina Press.', 'info');
+    localStorage.removeItem('austra_user_v1');
+    notify('Logged out from Austra Press.', 'info');
     setIsAuthModalOpen(false);
   };
 
@@ -106,7 +106,7 @@ export const AuthModal = () => {
             </div>
             <p className="text-xs text-slate-400 mb-6">
               {isRegister
-                ? 'Join Lumina Press to publish, read, and manage sovereign books.'
+                ? 'Join Austra Press to publish, read, and manage sovereign books.'
                 : 'Sign in to access your purchased library and creator royalties.'}
             </p>
 

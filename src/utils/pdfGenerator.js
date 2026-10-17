@@ -1,10 +1,11 @@
 import { jsPDF } from 'jspdf';
 
 /**
- * Generates and downloads a clean, beautifully formatted PDF for a given book.
+ * Generates and downloads a clean, beautifully formatted PDF for a given book with dynamic buyer watermarking.
  * @param {Object} book - Book object containing title, author, description, chapters, etc.
+ * @param {Object} watermarkOptions - Buyer license metadata (buyerEmail, orderId, licenseDate)
  */
-export const downloadBookPDF = (book) => {
+export const downloadBookPDF = (book, watermarkOptions = {}) => {
   try {
     const doc = new jsPDF({
       orientation: 'portrait',
@@ -16,6 +17,10 @@ export const downloadBookPDF = (book) => {
     const pageHeight = doc.internal.pageSize.getHeight();
     const margin = 20;
     const contentWidth = pageWidth - margin * 2;
+
+    const buyerEmail = watermarkOptions.buyerEmail || 'alex.reader@austra.io';
+    const orderId = watermarkOptions.orderId || `ORD-${Math.floor(10000 + Math.random() * 90000)}`;
+    const issueDate = watermarkOptions.licenseDate || new Date().toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
 
     // --- COVER PAGE ---
     // Background dark cover
@@ -35,7 +40,7 @@ export const downloadBookPDF = (book) => {
     doc.setTextColor(255, 120, 30);
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(11);
-    doc.text('LUMINA PRESS - OFFICIAL PUBLICATION', pageWidth / 2, 45, { align: 'center' });
+    doc.text('AUSTRA PRESS - OFFICIAL PUBLICATION', pageWidth / 2, 45, { align: 'center' });
 
     // Category
     doc.setTextColor(160, 170, 190);
@@ -75,12 +80,19 @@ export const downloadBookPDF = (book) => {
     doc.setFontSize(18);
     doc.text(book.author, pageWidth / 2, 187, { align: 'center' });
 
-    // Edition & License
+    // Edition & Digital DRM Watermark on Cover
     doc.setTextColor(130, 140, 160);
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(9);
-    doc.text(`Digital Collector Edition  •  Authorized PDF License`, pageWidth / 2, pageHeight - 35, { align: 'center' });
-    doc.text(`Verification ID: LP-${book.id}-${Math.floor(1000 + Math.random() * 9000)}`, pageWidth / 2, pageHeight - 28, { align: 'center' });
+    doc.text(`Digital Collector Edition  •  Authorized DRM-Free License`, pageWidth / 2, pageHeight - 38, { align: 'center' });
+    doc.setTextColor(255, 150, 60);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(8.5);
+    doc.text(`Licensed to: ${buyerEmail}  |  Order #${orderId}  |  ${issueDate}`, pageWidth / 2, pageHeight - 31, { align: 'center' });
+    doc.setTextColor(100, 110, 130);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8);
+    doc.text(`Austra Press Cryptographic Seal ID: AP-${book.id}-${Math.floor(1000 + Math.random() * 9000)}`, pageWidth / 2, pageHeight - 24, { align: 'center' });
 
     // --- INSIDE PAGES ---
     // Helper function to add a standard interior page
@@ -91,19 +103,28 @@ export const downloadBookPDF = (book) => {
       doc.rect(0, 0, pageWidth, pageHeight, 'F');
 
       // Top running header
-      doc.setTextColor(140, 140, 140);
+      doc.setTextColor(130, 135, 145);
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(8);
       doc.text(book.title.toUpperCase(), margin, 12);
-      doc.text('LUMINA DIGITAL LIBRARY', pageWidth - margin, 12, { align: 'right' });
+      doc.text('AUSTRA DIGITAL LIBRARY', pageWidth - margin, 12, { align: 'right' });
 
       doc.setDrawColor(220, 220, 225);
       doc.setLineWidth(0.3);
       doc.line(margin, 15, pageWidth - margin, 15);
 
-      // Bottom footer
+      // Bottom Running License Watermark (Subtle Security Footer)
+      doc.setTextColor(170, 175, 185);
+      doc.setFont('helvetica', 'italic');
+      doc.setFontSize(7.5);
+      doc.text(`Authorized copy for ${buyerEmail} • License #${orderId} • Austra Press Sovereign Edition`, margin, pageHeight - 11);
+
+      // Bottom page number
       const pageNum = doc.getNumberOfPages();
-      doc.text(`Page ${pageNum}`, pageWidth / 2, pageHeight - 10, { align: 'center' });
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(8.5);
+      doc.setTextColor(90, 95, 110);
+      doc.text(`Page ${pageNum}`, pageWidth - margin, pageHeight - 11, { align: 'right' });
 
       // Page Title if provided
       if (title) {
@@ -132,31 +153,31 @@ export const downloadBookPDF = (book) => {
 
     // Book Metadata Box
     doc.setFillColor(243, 244, 248);
-    doc.rect(margin, currentY, contentWidth, 35, 'F');
+    doc.rect(margin, currentY, contentWidth, 38, 'F');
     doc.setDrawColor(225, 230, 240);
-    doc.rect(margin, currentY, contentWidth, 35);
+    doc.rect(margin, currentY, contentWidth, 38);
 
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(9);
     doc.setTextColor(50, 60, 80);
-    doc.text('BOOK SPECIFICATIONS', margin + 6, currentY + 8);
+    doc.text('BOOK SPECIFICATIONS & SOVEREIGN LICENSE', margin + 6, currentY + 8);
 
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(8.5);
     doc.text(`Author: ${book.author}`, margin + 6, currentY + 16);
     doc.text(`Category: ${book.category || 'Literature'}`, margin + 6, currentY + 23);
-    doc.text(`Published By: Lumina Press Worldwide`, margin + 6, currentY + 30);
+    doc.text(`Published By: Austra Press Worldwide`, margin + 6, currentY + 30);
 
     doc.text(`Release Date: ${book.releaseDate || '2026'}`, margin + 85, currentY + 16);
-    doc.text(`Language: English (Original)`, margin + 85, currentY + 23);
+    doc.text(`Licensed To: ${buyerEmail}`, margin + 85, currentY + 23);
     doc.text(`Formats: Interactive Web & DRM-Free PDF`, margin + 85, currentY + 30);
 
-    currentY += 50;
+    currentY += 52;
 
     doc.setFont('times', 'italic');
     doc.setTextColor(110, 115, 125);
-    doc.text('Copyright © 2026 Lumina Press. All rights reserved.', margin, currentY);
-    doc.text('Purchased directly through the official Lumina Publisher Marketplace.', margin, currentY + 6);
+    doc.text('Copyright © 2026 Austra Press Inc. All rights reserved.', margin, currentY);
+    doc.text('Purchased directly through the official Austra Publisher Marketplace.', margin, currentY + 6);
 
     // Page 3: Table of contents
     addInteriorPage('Table of Contents');
@@ -207,9 +228,9 @@ export const downloadBookPDF = (book) => {
       }
     });
 
-    // Save PDF
+    // Save PDF with AustraPress naming
     const cleanFileName = book.title.replace(/[^a-zA-Z0-9_-]/g, '_');
-    doc.save(`${cleanFileName}_LuminaPress.pdf`);
+    doc.save(`${cleanFileName}_AustraPress.pdf`);
     return true;
   } catch (error) {
     console.error('Error generating PDF:', error);

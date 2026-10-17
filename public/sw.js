@@ -1,4 +1,4 @@
-const CACHE_NAME = 'lumina-cache-v1';
+const CACHE_NAME = 'austra-cache-v1';
 const STATIC_ASSETS = [
   '/',
   '/index.html',

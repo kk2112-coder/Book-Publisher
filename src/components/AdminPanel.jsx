@@ -85,7 +85,7 @@ export const AdminPanel = () => {
       title: newTitle,
       subtitle: newSubtitle,
       author: newAuthor,
-      authorRole: 'Official Lumina Author',
+      authorRole: 'Official Austra Author',
       category: newCategory,
       price: parseFloat(newPrice) || 25.0,
       coverImage: newCover,

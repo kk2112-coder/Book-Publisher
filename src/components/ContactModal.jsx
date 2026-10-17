@@ -19,7 +19,7 @@ export const ContactModal = () => {
 
     setSubmitted(true);
     setTimeout(() => {
-      notify('Thank you! Your message has been routed to Lumina Press Support.');
+      notify('Thank you! Your message has been routed to Austra Press Support.');
       setSubmitted(false);
       setIsContactModalOpen(false);
       setName('');
@@ -47,7 +47,7 @@ export const ContactModal = () => {
             <MessageSquare className="w-5 h-5" />
           </div>
           <div>
-            <h2 className="text-xl font-bold">Contact Lumina Press</h2>
+            <h2 className="text-xl font-bold">Contact Austra Press</h2>
             <p className="text-xs text-slate-400">Support, author manuscript inquiries, and licensing</p>
           </div>
         </div>

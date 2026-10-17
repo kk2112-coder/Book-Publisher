@@ -92,7 +92,7 @@ export const Navbar = () => {
           <div>
             <div className="flex items-center gap-2">
               <span className="brand-logo-text text-xl font-extrabold tracking-wider bg-gradient-to-r from-white via-slate-100 to-slate-400 bg-clip-text text-transparent">
-                LUMINA
+                AUSTRA
               </span>
               <span className="text-xs px-1.5 py-0.5 rounded bg-orange-500/20 text-orange-400 font-mono font-semibold border border-orange-500/30">
                 PRESS
@@ -239,7 +239,7 @@ export const Navbar = () => {
             onClick={() => setIsContactModalOpen(true)}
             className="hidden sm:flex p-2 rounded-lg bg-[#12141f] border border-white/[0.1] text-slate-300 hover:text-white hover:border-orange-500/40 transition-all"
             aria-label="Customer Contact & Support"
-            title="Contact Lumina Support"
+            title="Contact Austra Support"
           >
             <MessageSquare className="w-4 h-4 text-orange-400" />
           </button>

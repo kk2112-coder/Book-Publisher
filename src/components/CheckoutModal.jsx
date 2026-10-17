@@ -19,7 +19,8 @@ import {
   ArrowRight,
   BookOpen,
   CheckCircle2,
-  Clock
+  Clock,
+  Tag
 } from 'lucide-react';
 
 export const CheckoutModal = () => {
@@ -43,7 +44,7 @@ export const CheckoutModal = () => {
   const [paymentMethod, setPaymentMethod] = useState('card'); // 'card' | 'upi' | 'netbanking' | 'paypal'
 
   // Customer & Billing details
-  const [email, setEmail] = useState(currentUser?.email || 'alex.reader@lumina.io');
+  const [email, setEmail] = useState(currentUser?.email || 'alex.reader@austra.io');
   const [phone, setPhone] = useState('+1 (555) 019-2834');
   const [cardholderName, setCardholderName] = useState(currentUser?.name || 'Alex Mercer');
   const [cardNumber, setCardNumber] = useState('4532 •••• •••• 8921');
@@ -51,6 +52,11 @@ export const CheckoutModal = () => {
   const [cardCvc, setCardCvc] = useState('672');
   const [upiId, setUpiId] = useState('alex.reader@okaxis');
   const [selectedBank, setSelectedBank] = useState('HDFC Bank');
+
+  // Coupon / Promo Code State
+  const [couponInput, setCouponInput] = useState('');
+  const [appliedCoupon, setAppliedCoupon] = useState(null);
+  const [couponMessage, setCouponMessage] = useState(null);
 
   // OTP Authentication state
   const [generatedOtp, setGeneratedOtp] = useState('849201');
@@ -72,6 +78,9 @@ export const CheckoutModal = () => {
       setOtpError('');
       setCompletedOrder(null);
       setAttemptsLeft(3);
+      setAppliedCoupon(null);
+      setCouponInput('');
+      setCouponMessage(null);
       if (currentUser?.email) setEmail(currentUser.email);
       if (currentUser?.name) setCardholderName(currentUser.name);
     }
@@ -97,7 +106,35 @@ export const CheckoutModal = () => {
   if (!isCheckoutOpen) return null;
 
   const items = checkoutTarget ? [checkoutTarget] : cart;
-  const total = items.reduce((sum, item) => sum + item.price, 0);
+  const subtotal = items.reduce((sum, item) => sum + item.price, 0);
+  const discountAmount = appliedCoupon ? (subtotal * appliedCoupon.discountPercent) / 100 : 0;
+  const total = Math.max(0, subtotal - discountAmount);
+
+  // Coupon handling
+  const handleApplyCoupon = (e) => {
+    e?.preventDefault();
+    const cleanCode = couponInput.trim().toUpperCase();
+    if (!cleanCode) return;
+
+    if (cleanCode === 'AUSTRA20') {
+      setAppliedCoupon({ code: 'AUSTRA20', discountPercent: 20, label: '20% Austra Launch Discount' });
+      setCouponMessage({ type: 'success', text: 'Coupon AUSTRA20 applied! 20% discount granted.' });
+      notify('Coupon AUSTRA20 applied: 20% OFF!');
+    } else if (cleanCode === 'WELCOME50') {
+      setAppliedCoupon({ code: 'WELCOME50', discountPercent: 50, label: '50% Welcome Member Discount' });
+      setCouponMessage({ type: 'success', text: 'Coupon WELCOME50 applied! 50% discount granted.' });
+      notify('Coupon WELCOME50 applied: 50% OFF!');
+    } else {
+      setCouponMessage({ type: 'error', text: 'Invalid coupon. Try AUSTRA20 or WELCOME50.' });
+    }
+  };
+
+  const handleRemoveCoupon = () => {
+    setAppliedCoupon(null);
+    setCouponInput('');
+    setCouponMessage(null);
+    notify('Coupon removed', 'info');
+  };
 
   // Transition from Details to OTP verification
   const handleProceedToOtp = (e) => {
@@ -200,8 +237,11 @@ export const CheckoutModal = () => {
             ? `${selectedBank} NetBanking (OTP Verified)` 
             : 'PayPal Express 2FA Verified',
           email,
-          gateway: 'Lumina SecurePay 3D Gateway',
+          gateway: 'Austra SecurePay 3D Gateway',
           transactionId: `TXN-${Math.floor(100000 + Math.random() * 900000)}-3DS`,
+          finalTotal: total,
+          discount: discountAmount,
+          coupon: appliedCoupon?.code || null,
           keepModalOpen: true
         });
 
@@ -247,7 +287,7 @@ export const CheckoutModal = () => {
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="text-lg font-bold">Lumina SecurePay Gateway</h2>
+                <h2 className="text-lg font-bold">Austra SecurePay Gateway</h2>
                 <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-bold border border-emerald-500/30">
                   3D-SECURE 2.0
                 </span>
@@ -282,6 +322,66 @@ export const CheckoutModal = () => {
                   </div>
                 ))}
               </div>
+
+              {/* Coupon / Promo Code Field */}
+              <div className="pt-2 border-t border-white/[0.06] mb-3">
+                {appliedCoupon ? (
+                  <div className="flex items-center justify-between p-2 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-xs">
+                    <div className="flex items-center gap-2">
+                      <Tag className="w-4 h-4 text-emerald-400" />
+                      <span className="font-mono font-bold text-emerald-400">{appliedCoupon.code}</span>
+                      <span className="text-slate-300">({appliedCoupon.label})</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleRemoveCoupon}
+                      className="text-xs text-red-400 hover:text-red-300 font-semibold cursor-pointer underline ml-2"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <div className="relative flex-1">
+                      <Tag className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                      <input
+                        type="text"
+                        placeholder="Discount code (try AUSTRA20)"
+                        value={couponInput}
+                        onChange={(e) => setCouponInput(e.target.value)}
+                        className="w-full bg-[#151829] rounded-xl pl-8 pr-3 py-1.5 text-xs text-white uppercase font-mono border border-white/[0.1] focus:outline-none focus:border-orange-500"
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleApplyCoupon}
+                      className="px-3 py-1.5 rounded-xl bg-white/[0.08] hover:bg-orange-500 text-white font-bold text-xs transition-colors cursor-pointer border border-white/[0.1]"
+                    >
+                      Apply
+                    </button>
+                  </div>
+                )}
+
+                {couponMessage && (
+                  <p className={`text-[11px] mt-1.5 font-medium ${couponMessage.type === 'success' ? 'text-emerald-400' : 'text-red-400'}`}>
+                    {couponMessage.text}
+                  </p>
+                )}
+              </div>
+
+              {/* Subtotal & Discount rows */}
+              {discountAmount > 0 && (
+                <div className="space-y-1 py-1.5 border-t border-white/[0.04] text-xs">
+                  <div className="flex items-center justify-between text-slate-400">
+                    <span>Subtotal</span>
+                    <span className="font-mono">${subtotal.toFixed(2)}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-emerald-400 font-medium">
+                    <span>Discount ({appliedCoupon?.code})</span>
+                    <span className="font-mono">-${discountAmount.toFixed(2)}</span>
+                  </div>
+                </div>
+              )}
 
               <div className="pt-2.5 border-t border-white/[0.08] flex items-center justify-between text-sm font-bold">
                 <span className="text-slate-300">Total Settlement Amount</span>
@@ -725,13 +825,16 @@ export const CheckoutModal = () => {
                 <button
                   type="button"
                   onClick={() => {
-                    downloadBookPDF(items[0]);
-                    notify(`Downloading "${items[0].title}" PDF...`);
+                    downloadBookPDF(items[0], {
+                      buyerEmail: completedOrder?.customerEmail || email,
+                      orderId: completedOrder?.id || 'TXN-849201-3DS'
+                    });
+                    notify(`Downloading watermarked "${items[0].title}" PDF...`);
                   }}
                   className="py-3 rounded-xl bg-white/[0.08] hover:bg-white/[0.12] text-white font-bold text-xs flex items-center justify-center gap-2 border border-white/[0.1] transition-all cursor-pointer"
                 >
                   <DownloadCloud className="w-4 h-4 text-orange-400" />
-                  <span>Download DRM-Free PDF</span>
+                  <span>Download Watermarked PDF</span>
                 </button>
               )}
             </div>

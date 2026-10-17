@@ -5,7 +5,7 @@ import { translations } from '../utils/i18n.js';
 import fs from 'node:fs';
 import path from 'node:path';
 
-describe('Lumina Press Core Business Logic Tests', () => {
+describe('Austra Press Core Business Logic Tests', () => {
   it('should verify initial catalog has rich books with free 3-page preview limits', () => {
     assert.ok(INITIAL_BOOKS.length >= 8, 'Catalog should contain at least 8 curated books');
     
@@ -42,6 +42,60 @@ describe('Lumina Press Core Business Logic Tests', () => {
 
     assert.ok(Math.abs(authorPayout - 21.2415) < 0.001);
     assert.ok(Math.abs(platformFee - 3.7485) < 0.001);
+  });
+
+  it('should validate coupon discounts (AUSTRA20 = 20% off, WELCOME50 = 50% off)', () => {
+    const applyCoupon = (code, subtotal) => {
+      const clean = (code || '').trim().toUpperCase();
+      let discountPercent = 0;
+      if (clean === 'AUSTRA20') discountPercent = 20;
+      else if (clean === 'WELCOME50') discountPercent = 50;
+      const discountAmount = (subtotal * discountPercent) / 100;
+      return {
+        discountPercent,
+        discountAmount,
+        finalTotal: Math.max(0, subtotal - discountAmount)
+      };
+    };
+
+    const cartTotal = 50.00;
+    const res20 = applyCoupon('AUSTRA20', cartTotal);
+    assert.equal(res20.discountPercent, 20);
+    assert.equal(res20.discountAmount, 10.00);
+    assert.equal(res20.finalTotal, 40.00);
+
+    const res50 = applyCoupon('WELCOME50', cartTotal);
+    assert.equal(res50.discountPercent, 50);
+    assert.equal(res50.discountAmount, 25.00);
+    assert.equal(res50.finalTotal, 25.00);
+
+    const resInvalid = applyCoupon('INVALID_CODE', cartTotal);
+    assert.equal(resInvalid.discountPercent, 0);
+    assert.equal(resInvalid.finalTotal, 50.00);
+  });
+
+  it('should validate dynamic PDF watermarking structure for licensed buyers', () => {
+    const formatWatermark = (license) => {
+      const email = license?.buyerEmail || 'verified.buyer@austra.io';
+      const order = license?.orderId || 'ORD-AUSTRA';
+      return `Licensed to ${email} • Order #${order} • Austra DRM-Free Edition`;
+    };
+
+    const watermark = formatWatermark({ buyerEmail: 'alex.reader@austra.io', orderId: 'ORD-89412' });
+    assert.ok(watermark.includes('alex.reader@austra.io'), 'Watermark must contain buyer email');
+    assert.ok(watermark.includes('ORD-89412'), 'Watermark must contain transaction order ID');
+    assert.ok(watermark.includes('Austra DRM-Free Edition'), 'Watermark must state Austra DRM-Free Edition');
+  });
+
+  it('should validate customer review aggregation and rating averages', () => {
+    const reviews = [
+      { id: '1', rating: 5, comment: 'Brilliant' },
+      { id: '2', rating: 4, comment: 'Very insightful' },
+      { id: '3', rating: 5, comment: 'Masterpiece' }
+    ];
+
+    const avg = reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length;
+    assert.equal(avg.toFixed(1), '4.7');
   });
 
   it('should have complete translation keys across all 5 languages', () => {

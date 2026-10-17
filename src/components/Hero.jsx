@@ -83,9 +83,9 @@ export const Hero = () => {
         <div className="relative mx-auto max-w-4xl p-6 sm:p-8 rounded-2xl glass-panel-glow border border-orange-500/25 shadow-2xl shadow-orange-950/20">
           <div className="relative z-10 flex flex-col items-center">
             {/* Top Tag */}
-            <div className="text-[11px] font-mono tracking-widest uppercase text-slate-300 mb-8 flex items-center gap-2">
+            <div className="text-[11px] font-mono tracking-widest uppercase text-slate-200 mb-8 flex items-center gap-2">
               <span className="w-1.5 h-1.5 rounded-full bg-orange-500"></span>
-              <span>LUMINA PUBLISHER ARCHITECTURE MESH</span>
+              <span>AUSTRA PUBLISHER ARCHITECTURE MESH</span>
               <span className="w-1.5 h-1.5 rounded-full bg-orange-500"></span>
             </div>
 
@@ -97,7 +97,7 @@ export const Hero = () => {
                   <BookOpen className="w-4 h-4" />
                 </div>
                 <h2 className="text-xs font-bold text-white mb-1">Free 3-Page Sample</h2>
-                <p className="text-[11px] text-slate-400 leading-tight">Inspect typography, prose, and chapters before purchase.</p>
+                <p className="text-[11px] text-slate-300 leading-tight">Inspect typography, prose, and chapters before purchase.</p>
               </div>
 
               {/* Connecting line */}
@@ -107,13 +107,13 @@ export const Hero = () => {
 
               {/* Central Core */}
               <div className="relative p-5 rounded-2xl bg-gradient-to-b from-[#181a29] to-[#0f111d] border-2 border-orange-500/60 shadow-xl shadow-orange-500/20 text-center scale-105 transition-transform duration-500 hover:scale-108">
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-full bg-orange-600 text-white text-[9px] font-bold uppercase tracking-wider">
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-2.5 py-0.5 rounded-full bg-orange-600 text-white text-[9px] font-extrabold uppercase tracking-wider border border-orange-400/50 shadow-sm">
                   Core Engine
                 </div>
                 <div className="w-12 h-12 mx-auto rounded-xl bg-orange-500/20 border border-orange-400/50 flex items-center justify-center mb-2.5 text-orange-400">
                   <Cpu className="w-6 h-6 animate-pulse" />
                 </div>
-                <h2 className="text-sm font-extrabold text-white">LUMINA PROTOCOL</h2>
+                <h2 className="text-sm font-extrabold text-white">AUSTRA PROTOCOL</h2>
                 <p className="text-[10px] text-orange-300 font-mono mt-0.5">Automated Paywall & PDF</p>
               </div>
 

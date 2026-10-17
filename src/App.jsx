@@ -53,7 +53,7 @@ function MainApp() {
         <aside aria-label="App installation banner" className="bg-gradient-to-r from-orange-600 via-amber-600 to-orange-600 text-white px-4 py-2 text-xs font-semibold flex items-center justify-between shadow-lg z-50">
           <div className="flex items-center gap-2">
             <DownloadCloud className="w-4 h-4 animate-bounce" />
-            <span>Install Lumina Press App for offline reading & fast access</span>
+            <span>Install Austra Press App for offline reading & fast access</span>
           </div>
           <div className="flex items-center gap-2">
             <button

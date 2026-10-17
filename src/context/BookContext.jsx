@@ -6,13 +6,13 @@ import confetti from 'canvas-confetti';
 const BookContext = createContext();
 
 const STORAGE_KEYS = {
-  BOOKS: 'lumina_books_v1',
-  LIBRARY: 'lumina_library_v1',
-  ORDERS: 'lumina_orders_v1',
-  SETTINGS: 'lumina_settings_v1',
-  USER: 'lumina_user_v1',
-  THEME: 'lumina_theme_v1',
-  LANG: 'lumina_lang_v1'
+  BOOKS: 'austra_books_v1',
+  LIBRARY: 'austra_library_v1',
+  ORDERS: 'austra_orders_v1',
+  SETTINGS: 'austra_settings_v1',
+  USER: 'austra_user_v1',
+  THEME: 'austra_theme_v1',
+  LANG: 'austra_lang_v1'
 };
 
 const DEFAULT_SETTINGS = {
@@ -98,7 +98,7 @@ export const BookProvider = ({ children }) => {
           items: [{ id: 'book-1', title: 'Inference at the Edge', price: 24.99, author: 'Dr. Elena Vance' }],
           total: 24.99,
           paymentMethod: 'Credit Card (Stripe Verified)',
-          customerEmail: 'alex.reader@lumina.io',
+          customerEmail: 'alex.reader@austra.io',
           status: 'Completed'
         }
       ];
@@ -123,14 +123,14 @@ export const BookProvider = ({ children }) => {
       const saved = localStorage.getItem(STORAGE_KEYS.USER);
       return saved ? JSON.parse(saved) : {
         name: 'Alex Mercer',
-        email: 'alex.reader@lumina.io',
+        email: 'alex.reader@austra.io',
         avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80',
         role: 'Reader & Creator'
       };
     } catch {
       return {
         name: 'Alex Mercer',
-        email: 'alex.reader@lumina.io',
+        email: 'alex.reader@austra.io',
         avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80',
         role: 'Reader & Creator'
       };
@@ -156,6 +156,36 @@ export const BookProvider = ({ children }) => {
   const [cart, setCart] = useState([]);
   const [toast, setToast] = useState(null);
   const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false);
+
+  // Reviews state (bookId -> array of reviews)
+  const [bookReviews, setBookReviews] = useState(() => {
+    try {
+      const saved = localStorage.getItem('austra_reviews_v1');
+      return saved ? JSON.parse(saved) : {
+        'book-1': [
+          { id: 'rev-1', userName: 'Sarah Jenkins', rating: 5, date: '15 Oct 2026', comment: 'Spectacular edge computing insights. The interactive preview and PDF download were flawless.' },
+          { id: 'rev-2', userName: 'Marcus Vance', rating: 5, date: '12 Oct 2026', comment: 'One of the best technical architecture books of 2026. Highly recommended!' }
+        ],
+        'book-2': [
+          { id: 'rev-3', userName: 'Elena Rostova', rating: 5, date: '14 Oct 2026', comment: 'Incredible world-building. Read the first 3 chapters and unlocked immediately.' }
+        ]
+      };
+    } catch {
+      return {};
+    }
+  });
+
+  // Author Payout Requests state
+  const [payoutRequests, setPayoutRequests] = useState(() => {
+    try {
+      const saved = localStorage.getItem('austra_payouts_v1');
+      return saved ? JSON.parse(saved) : [
+        { id: 'PAY-1082', amount: 154.50, date: '10 Oct 2026', method: 'Stripe Direct', status: 'Settled' }
+      ];
+    } catch {
+      return [];
+    }
+  });
 
   // Persistence effects
   useEffect(() => {
@@ -229,10 +259,13 @@ export const BookProvider = ({ children }) => {
       id: paymentInfo?.transactionId || `ORD-${Math.floor(10000 + Math.random() * 90000)}`,
       date: new Date().toLocaleString('en-US', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
       items: itemsToBuy.map((b) => ({ id: b.id, title: b.title, price: b.price, author: b.author })),
-      total: totalAmount,
+      total: paymentInfo?.finalTotal !== undefined ? paymentInfo.finalTotal : totalAmount,
+      originalTotal: totalAmount,
+      discount: paymentInfo?.discount || 0,
+      coupon: paymentInfo?.coupon || null,
       paymentMethod: paymentInfo?.method || 'Credit Card (3D-Secure OTP)',
       customerEmail: paymentInfo?.email || currentUser?.email || 'customer@example.com',
-      gateway: paymentInfo?.gateway || 'Lumina SecurePay',
+      gateway: paymentInfo?.gateway || 'Austra SecurePay',
       otpVerified: true,
       status: 'Completed'
     };
@@ -287,7 +320,46 @@ export const BookProvider = ({ children }) => {
     };
 
     setBooks((prev) => [bookEntry, ...prev]);
-    notify(`Congratulations! "${newBook.title}" is published on Lumina Marketplace!`);
+    notify(`Congratulations! "${newBook.title}" is published on Austra Marketplace!`);
+  };
+
+  const addReview = (bookId, newRev) => {
+    const reviewObj = {
+      id: `rev-${Date.now()}`,
+      userName: currentUser?.name || 'Verified Reader',
+      rating: newRev.rating || 5,
+      comment: newRev.comment,
+      date: new Date().toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })
+    };
+
+    setBookReviews((prev) => {
+      const updated = {
+        ...prev,
+        [bookId]: [reviewObj, ...(prev[bookId] || [])]
+      };
+      localStorage.setItem('austra_reviews_v1', JSON.stringify(updated));
+      return updated;
+    });
+
+    notify('Your review and rating have been posted!');
+  };
+
+  const requestPayout = (amount, method) => {
+    const newPayout = {
+      id: `PAY-${Math.floor(1000 + Math.random() * 9000)}`,
+      amount: parseFloat(amount),
+      date: new Date().toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }),
+      method: method || 'Bank Transfer (ACH/NEFT)',
+      status: 'Processing'
+    };
+
+    setPayoutRequests((prev) => {
+      const updated = [newPayout, ...prev];
+      localStorage.setItem('austra_payouts_v1', JSON.stringify(updated));
+      return updated;
+    });
+
+    notify(`Payout request for $${parseFloat(amount).toFixed(2)} submitted!`);
   };
 
   const adminAddBook = (bookData) => {
@@ -425,6 +497,10 @@ export const BookProvider = ({ children }) => {
         resetToDefaults,
         isAdminAuthenticated,
         setIsAdminAuthenticated,
+        bookReviews,
+        addReview,
+        payoutRequests,
+        requestPayout,
         currentUser,
         setCurrentUser,
         toast,
